@@ -1,0 +1,14 @@
+
+
+
+
+
+# Virtual environment
+venv/
+
+# environment file
+.env
+
+# text data files -- too big for git
+## see text-data-info/ for files that give info on this data
+text-data/
