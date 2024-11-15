@@ -21,8 +21,16 @@ Created text normalization for BPE tokenizer - converts text to ASCII, to remove
 
 Pre-tokenizer:
 - My first-pass intuition is to have special tokens for space, newline, and tab characters, as well as punctuation/special characters - and these don't get included in the merges for BPE. But other tokenizers seem to include spaces with the characters - curious as to why this is.
-    - seems to me like having separate tokens would reduce vocabulary size/allow for merges to cover characters more effectively.
+    - seems to me like having separate tokens would reduce vocabulary size/allow for merges to cover characters & words more effectively.
+    - but the tradeoff will be that token sequences will be longer
+
+- Naive version
+    - Special tokens - space, newline, tab, punctuation/special characters, end of text, unknown
+- GPT version
+    - only special tokens for newline, tab, end of text, unknown
+
 - Maybe I'll try both versions, and see which works better when training the LLM?
+    - I'm guessing the GPT version, because that's what OpenAI used
 
 - Special tokens - what special tokens do I need? - by special I mean they won't be included with the merges
     - End of sentence - not sure I need, periods & other punctuation should be enough.
@@ -37,3 +45,4 @@ Pre-tokenizer:
         - <unknown>
     - Punctuation/special characters
     
+Wrote train function - it works decently well on the LimaRP dataset - I think it will need to be optimized for a larger dataset (or I'll just let it run for a while). 

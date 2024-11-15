@@ -19,9 +19,11 @@ In an effort to gain a deep understanding of LLM's (and their underlying archite
   - [ ] Tokenizer - train a tokenizer from scratch -- using BPE
     - [x] normalization
     - [ ] pre-tokenization - two methods to try
-      - [ ] 'Naive method' - have space, newline, tab, punctuation as special characters (along with <endoftext>)
+      - [x] 'Naive method' - have space, newline, tab, punctuation as special characters (along with <endoftext>)
       - [ ] GPT method - include spaces 
-    - [ ] Training
+    - [x] Training
+      - [ ] optimize?
+    - [ ] vocab -- save to file, read from file
     - [ ] encoder
     - [ ] decoder
     - [ ] later - train a byte-level BPE tokenizer?
