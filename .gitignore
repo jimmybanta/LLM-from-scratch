@@ -21,3 +21,6 @@ __pycache__/
 
 # a trash directory
 _graveyard/
+
+# a directory containing model files
+models/

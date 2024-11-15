@@ -23,7 +23,7 @@ In an effort to gain a deep understanding of LLM's (and their underlying archite
       - [ ] GPT method - include spaces 
     - [x] Training
       - [ ] optimize?
-    - [ ] vocab -- save to file, read from file
+    - [x] vocab -- save to file, read from file
     - [ ] encoder
     - [ ] decoder
     - [ ] later - train a byte-level BPE tokenizer?

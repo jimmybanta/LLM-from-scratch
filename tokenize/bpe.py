@@ -1,16 +1,26 @@
 from unidecode import unidecode
 from typing import List
 import string
+import json
+import os
 import re
+import datetime
+from pathlib import Path
+from dotenv import load_dotenv
 
 from data.import_small import import_full_list
+
+load_dotenv()
+
 
 class BPETokenizer:
     '''
     A tokenizer that uses Byte Pair Encoding (BPE) to tokenize text.
     '''
     
-    def __init__(self, corpus=None, vocab_size=1024):
+    def __init__(self, model_dir, 
+                 vocab_file=None,
+                 corpus=None, vocab_size=1024):
         '''
         Initialize the BPETokenizer.
         
@@ -20,10 +30,18 @@ class BPETokenizer:
             The corpus used to train the tokenizer. Default is None.
         '''
 
+        # the directory to save the model
+        self.model_dir = model_dir
+        Path(self.model_dir).mkdir(parents=True, exist_ok=True)
+
         # the corpus used to train the tokenizer
         self.corpus = corpus
 
-        self.vocab = []
+        # if a vocab file is given, then read in the vocab
+        if vocab_file:
+            self.vocab = self.read_vocab_from_file(vocab_file)
+        else:
+            self.vocab = []
 
         self.vocab_size = vocab_size
 
@@ -220,7 +238,39 @@ class BPETokenizer:
 
         # update the vocab using BPE algorithm
         self.vocab = self.update_vocab(word_counts)
+
+        # sort the vocab
+        self.vocab = sorted(self.vocab)
         
+    def write_vocab_to_file(self, filename):
+        '''
+        Write the vocabulary to a json file.
+
+        Parameters
+        ----------
+        filename : str
+            The filename to write the vocabulary to.
+        '''
+
+        with open(filename, 'w') as f:
+            json.dump(self.vocab, f, indent=4)
+    
+    def read_vocab_from_file(self, filename):
+        '''
+        Read the vocabulary from a json file.
+
+        Parameters
+        ----------
+        filename : str
+            The filename to read the vocabulary from.
+        '''
+
+        with open(filename, 'r') as f:
+            vocab = json.load(f)
+
+        return vocab
+        
+
         
 
 class NaiveBPETokenizer(BPETokenizer):
@@ -229,7 +279,9 @@ class NaiveBPETokenizer(BPETokenizer):
     that don't get included into the merges.
     '''
 
-    def __init__(self, corpus=None):
+    def __init__(self, model_dir, 
+                 vocab_file=None,
+                 corpus=None):
         '''
         Initialize the NaiveBPETokenizer.
         
@@ -239,7 +291,7 @@ class NaiveBPETokenizer(BPETokenizer):
             The corpus used to train the tokenizer. Default is None.
         '''
 
-        super().__init__(corpus)
+        super().__init__(model_dir, vocab_file=vocab_file, corpus=corpus)
 
         self.special_characters = ['<space>', '<newline>', '<tab>', '<endoftext>', '<unknown>']
         self.special_characters = self.special_characters + [mark for mark in string.punctuation]
@@ -336,12 +388,19 @@ if __name__ == '__main__':
 
     print('text imported')
 
+    # use the current datetime to generate a unique directory name
+    current_time = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
+
+    model_dir = os.path.join(os.getenv('HOME_DIR'), 'models', 'limaRP', current_time)
 
     # test the pre-tokenize method
-    bpe = NaiveBPETokenizer(corpus=text)
+    bpe = NaiveBPETokenizer(model_dir, 
+                            vocab_file='/Users/jimbo/Documents/coding/projects/llm-from-scratch/models/limaRP/20241115_154532/vocab.json',
+                            corpus=text)
 
-    bpe.train()
+    #bpe.train()
 
-    print(bpe.vocab)
+
+    #bpe.write_vocab_to_file(os.path.join(model_dir, 'vocab.json'))
 
 
