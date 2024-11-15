@@ -16,9 +16,12 @@ In an effort to gain a deep understanding of LLM's (and their underlying archite
 ### Transformer Implementation
 
 - [ ] Data Pre-Processing
-  - [ ] Tokenizer - train a tokenizer from scratch
+  - [ ] Tokenizer - train a tokenizer from scratch -- using BPE
+    - [x] normalization
+    - [ ] pre-tokenization
     - [ ] encoder
-    - [ ] Decoder
+    - [ ] decoder
+    - [ ] later - train a byte-level BPE tokenizer?
   - [ ] Word Embedding - train a word embedder from scratch?
   - [ ] Positional Encoding
 - [ ] Attention

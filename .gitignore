@@ -12,3 +12,12 @@ venv/
 # text data files -- too big for git
 ## see text-data-info/ for files that give info on this data
 text-data/
+
+.vscode
+
+# caches
+__pycache__/
+.pytest_cache/
+
+# a trash directory
+_graveyard/

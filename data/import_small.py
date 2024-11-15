@@ -3,7 +3,7 @@ import os
 import json
 
 
-def import_full_string():
+def import_full_string() -> str:
     '''
     Imports the full string of the small dataset, from the file.
 
