@@ -34,6 +34,8 @@ In an effort to gain a deep understanding of LLM's (and their underlying archite
 
 ## Directories & Files
 
+- data/ -- contains modules related to data import, processing, etc.
+- tests/ -- contains unit tests for the modules
+- tokenize/ -- contains modules related to tokenization
 - text-data-info/ -- contains information about the datasets used (the full datasets aren't being uploaded to GitHub)
   - LimaRP.md - the small dataset used for testing
-- data/ -- contains modules related to data import, processing, etc.
