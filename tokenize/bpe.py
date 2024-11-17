@@ -269,7 +269,49 @@ class BPETokenizer:
             vocab = json.load(f)
 
         return vocab
+
+    def lookup_brute_search(self, token: str) -> int:
+        '''
+        Given a token, does a brute force search to find the index of the token.
+
+        Parameters
+        ----------
+        token : str
+            The token to find the index of.
+
+        Returns
+        -------
+        int
+            The index of the token.
+        '''
+
+        for i, vocab_token in enumerate(self.vocab):
+            if vocab_token == token:
+                return i
         
+        return -1
+        
+    def encode(self, text: str) -> List[int]:
+        '''
+        Given text, encodes it using the vocabulary.
+
+        Parameters
+        ----------
+        text : str
+            The text to encode.
+
+        Returns
+        -------
+        List[int]
+            A list of the encoded tokens.
+        '''
+
+        # TO DO: implement this method
+
+        pass
+
+
+
 
         
 
@@ -369,38 +411,3 @@ class NaiveBPETokenizer(BPETokenizer):
 
         return text_split
     
-
-
-if __name__ == '__main__':
-
-    text = ['''
-        This is a sample text.. \n\t\n 
-            I want to includ0e special characters like !@#$%^&*()_+{}|:"<>?[]\;',./`~ and numbers like 1234567890.
-            to make sure they're all pre-tokenized correctly.
-
-            bla bla bla 10$10
-
-            the quick brown fox jumps over the lazy dog.
-            the hen is in the pen.
-            ''']
-    
-    text = import_full_list()
-
-    print('text imported')
-
-    # use the current datetime to generate a unique directory name
-    current_time = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
-
-    model_dir = os.path.join(os.getenv('HOME_DIR'), 'models', 'limaRP', current_time)
-
-    # test the pre-tokenize method
-    bpe = NaiveBPETokenizer(model_dir, 
-                            vocab_file='/Users/jimbo/Documents/coding/projects/llm-from-scratch/models/limaRP/20241115_154532/vocab.json',
-                            corpus=text)
-
-    #bpe.train()
-
-
-    #bpe.write_vocab_to_file(os.path.join(model_dir, 'vocab.json'))
-
-

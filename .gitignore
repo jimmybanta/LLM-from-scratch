@@ -24,3 +24,6 @@ _graveyard/
 
 # a directory containing model files
 models/
+
+# temp.py is a file I use for testing things out
+temp.py

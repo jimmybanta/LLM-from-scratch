@@ -24,7 +24,10 @@ In an effort to gain a deep understanding of LLM's (and their underlying archite
     - [x] Training
       - [ ] optimize?
     - [x] vocab -- save to file, read from file
-    - [ ] encoder
+    - [ ] encoder - 3 methods
+      - [x] brute force search
+      - [ ] binary search
+      - [ ] hash table
     - [ ] decoder
     - [ ] later - train a byte-level BPE tokenizer?
   - [ ] Word Embedding - train a word embedder from scratch?

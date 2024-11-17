@@ -49,4 +49,12 @@ Wrote train function - it works decently well on the LimaRP dataset - I think it
 
 Added functions to write the vocab to a json file, and read it from a json file.
 
-I'm sorting the vocab alphbetically - hoping that'll make it easier to access, as I could use binary search to encode.
+### Sunday - 11/17/24
+
+Encoding - given tokens, how do I convert them to their integer values?
+- most basic method - brute force search through the vocab
+- more efficient method - binary search through the vocab, sorted alphabetically
+- potentially even more efficient - have a hash table that stores the vocab by first character, then second character, etc. 
+
+Try all 3, compare times.
+
