@@ -65,3 +65,32 @@ Completed brute and binary search.
 
 Changed special character mechanism so I have a file that lists the special characters, and it reads them in - so I can add any special characters I want.
 Had some trouble with puncutation - there were characters that weren't included in string.punctuation, but seem like punctuation to me (e.g. {), so I added those in.
+
+Completed hash table search.
+
+Ran some quick tests on the speed of each method:
+    - used the large vocab - as this is closest to the real-world scenario
+    Results:
+
+    <endoftext> - index: 0: binary speedup: 1.3335816725647234, hash speedup: 1.7399756986634265
+    <newline> - index: 1: binary speedup: 1.5705741626794258, hash speedup: 1.6949225473321858
+    <space> - index: 2: binary speedup: 0.6932013769363167, hash speedup: 1.2888
+    <tab> - index: 3: binary speedup: 1.1434262948207172, hash speedup: 1.606942889137738
+    <unknown> - index: 4: binary speedup: 0.908675799086758, hash speedup: 1.9944320712694878
+    0 - index: 36: binary speedup: 0.25004190646477065, hash speedup: 1.2506987143655675
+    A - index: 49: binary speedup: 0.5688276659281379, hash speedup: 3.002033553634977
+    items - index: 3047: binary speedup: 27.002383300460224, hash speedup: 87.4308142629058
+    nature - index: 3578: binary speedup: 43.85366705471478, hash speedup: 131.4844677137871
+    spite - index: 4756: binary speedup: 64.3044582751175, hash speedup: 176.70820244328098
+    uses - index: 5356: binary speedup: 77.52594465141033, hash speedup: 180.9018938217945
+    zing - index: 5661: binary speedup: 73.44297776192175, hash speedup: 287.6488122962273
+    zipper - index: 5662: binary speedup: 76.53995063011563, hash speedup: 328.9380234505863
+    zy - index: 5663: binary speedup: 85.15185856754306, hash speedup: 350.0217391304348
+    zz - index: 5664: binary speedup: 86.27349570200573, hash speedup: 373.7982619490999
+    zzle - index: 5665: binary speedup: 82.82770270270271, hash speedup: 355.9140145170296
+
+    For special characters, it was all about the same - as expected, because they're the first items in the vocab.
+
+    For early items that aren't special tokens, binary is a little slower, which makes sense.
+    As we get later, binary gets better.
+    Hash table is consistently the fastest.

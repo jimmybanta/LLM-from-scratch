@@ -23,7 +23,7 @@ def test_bpe_init():
     assert bpe.model_dir == model_dir
     assert bpe.corpus == corpus
     assert bpe.vocab_size == 500
-    assert bpe.vocab == bpe.read_vocab_from_file(vocab_file)
+    assert bpe.vocab == bpe.read_from_file(vocab_file)
 
     # Clean up: Delete the model directory if it exists
     if os.path.exists(model_dir):
@@ -31,7 +31,7 @@ def test_bpe_init():
 
     # Test case 3: Initialize with only vocab_file
     bpe = BPETokenizer(vocab_file=vocab_file)
-    assert bpe.vocab == bpe.read_vocab_from_file(vocab_file)
+    assert bpe.vocab == bpe.read_from_file(vocab_file)
 
     # Test case 4: Initialize with only model_dir
     bpe = BPETokenizer(model_dir=model_dir)
@@ -66,7 +66,7 @@ def test_naive_bpe_init():
     assert bpe.model_dir == model_dir
     assert bpe.corpus == corpus
     assert bpe.vocab_size == 500
-    assert bpe.vocab == bpe.read_vocab_from_file(vocab_file)
+    assert bpe.vocab == bpe.read_from_file(vocab_file)
     assert bpe.special_characters == bpe.read_special_char_from_file(
         os.path.join(os.getenv('HOME_DIR'), 'tokenize', 'assets', 'naive_bpe_special_char.json')
     )
@@ -77,7 +77,7 @@ def test_naive_bpe_init():
 
     # Test case 3: Initialize with only vocab_file
     bpe = NaiveBPETokenizer(vocab_file=vocab_file)
-    assert bpe.vocab == bpe.read_vocab_from_file(vocab_file)
+    assert bpe.vocab == bpe.read_from_file(vocab_file)
     assert bpe.special_characters == bpe.read_special_char_from_file(
         os.path.join(os.getenv('HOME_DIR'), 'tokenize', 'assets', 'naive_bpe_special_char.json')
     )
@@ -387,6 +387,73 @@ def test_lookup_binary_search():
         idx = bpe.lookup_binary_search(token)
         assert idx == expected[i]
 
+def test_generate_lookup_table():
+
+    
+    # Test case 1: small vocab
+    bpe = NaiveBPETokenizer(
+        vocab_file=os.path.join(os.getenv('TESTS_DIR'), 'tokenize_tests', 'assets', 'small_vocab.json'),
+        vocab_size=175
+        )
+    bpe.generate_lookup_table()
+    expected = bpe.read_from_file(os.path.join(os.getenv('TESTS_DIR'), 'tokenize_tests', 'assets', 'small_lookup_table.json'),)
+    assert bpe.lookup_table == expected
+
+    # Test case 2: medium vocab
+    bpe = NaiveBPETokenizer(
+        vocab_file=os.path.join(os.getenv('TESTS_DIR'), 'tokenize_tests', 'assets', 'medium_vocab.json'),
+        vocab_size=1024
+        )
+    bpe.generate_lookup_table()
+    expected = bpe.read_from_file(os.path.join(os.getenv('TESTS_DIR'), 'tokenize_tests', 'assets', 'medium_lookup_table.json'),)
+    assert bpe.lookup_table == expected
+
+    # Test case 3: large vocab
+    bpe = NaiveBPETokenizer(
+        vocab_file=os.path.join(os.getenv('TESTS_DIR'), 'tokenize_tests', 'assets', 'large_vocab.json'),
+        vocab_size=5667
+        )
+    bpe.generate_lookup_table()
+    expected = bpe.read_from_file(os.path.join(os.getenv('TESTS_DIR'), 'tokenize_tests', 'assets', 'large_lookup_table.json'),)
+    assert bpe.lookup_table == expected
+
+def test_lookup_table_search():
+
+    test_tokens = ['the', 'there', '@', '<endoftext>', '1', '2', '3', '<newline>', 'yet', 'ying', '~']
+    
+    # Test case 1: small vocab
+    bpe = NaiveBPETokenizer(
+        vocab_file=os.path.join(os.getenv('TESTS_DIR'), 'tokenize_tests', 'assets', 'small_vocab.json'),
+        lookup_table_file=os.path.join(os.getenv('TESTS_DIR'), 'tokenize_tests', 'assets', 'small_lookup_table.json'),
+        vocab_size=175
+        )
+    expected = [157, -1, 26, 0, 37, 48, 49, 1, -1, -1, 30]
+    for i, token in enumerate(test_tokens):
+        idx = bpe.lookup_table_search(token)
+        assert idx == expected[i]
+
+    # Test case 2: medium vocab
+    bpe = NaiveBPETokenizer(
+        vocab_file=os.path.join(os.getenv('TESTS_DIR'), 'tokenize_tests', 'assets', 'medium_vocab.json'),
+        lookup_table_file=os.path.join(os.getenv('TESTS_DIR'), 'tokenize_tests', 'assets', 'medium_lookup_table.json'),
+        vocab_size=1024
+        )
+    expected = [885, 890, 26, 0, 37, 38, 39, 1, 1017, 1018, 30]
+    for i, token in enumerate(test_tokens):
+        idx = bpe.lookup_table_search(token)
+        assert idx == expected[i]
+
+    # Test case 3: large vocab
+    bpe = NaiveBPETokenizer(
+        vocab_file=os.path.join(os.getenv('TESTS_DIR'), 'tokenize_tests', 'assets', 'large_vocab.json'),
+        lookup_table_file=os.path.join(os.getenv('TESTS_DIR'), 'tokenize_tests', 'assets', 'large_lookup_table.json'),
+        vocab_size=5667
+        )
+    expected = [5053, 5061, 26, 0, 38, 40, 42, 1, 5642, 5643, 30]
+    for i, token in enumerate(test_tokens):
+        idx = bpe.lookup_table_search(token)
+        assert idx == expected[i]
+    
 
 
     

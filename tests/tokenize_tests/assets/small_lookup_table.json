@@ -1,0 +1,496 @@
+{
+    "special": {
+        "<endoftext>": 0,
+        "<newline>": 1,
+        "<space>": 2,
+        "<tab>": 3,
+        "<unknown>": 4,
+        "!": 5,
+        "#": 6,
+        "$": 7,
+        "%": 8,
+        "&": 9,
+        "'": 10,
+        "\"": 11,
+        "(": 12,
+        ")": 13,
+        "*": 14,
+        "+": 15,
+        ",": 16,
+        "-": 17,
+        ".": 18,
+        "/": 19,
+        ":": 20,
+        ";": 21,
+        "<": 22,
+        "=": 23,
+        ">": 24,
+        "?": 25,
+        "@": 26,
+        "{": 27,
+        "|": 28,
+        "}": 29,
+        "~": 30,
+        "^": 31,
+        "_": 32,
+        "`": 33,
+        "[": 34,
+        "]": 35
+    },
+    "0": {
+        "complete_token": 36
+    },
+    "1": {
+        "complete_token": 37,
+        "0": {
+            "complete_token": 38
+        },
+        "2": {
+            "complete_token": 39,
+            "3": {
+                "complete_token": 40,
+                "4": {
+                    "complete_token": 41,
+                    "5": {
+                        "complete_token": 42,
+                        "6": {
+                            "complete_token": 43,
+                            "7": {
+                                "complete_token": 44,
+                                "8": {
+                                    "complete_token": 45,
+                                    "9": {
+                                        "complete_token": 46,
+                                        "0": {
+                                            "complete_token": 47
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "2": {
+        "complete_token": 48
+    },
+    "3": {
+        "complete_token": 49
+    },
+    "4": {
+        "complete_token": 50
+    },
+    "5": {
+        "complete_token": 51
+    },
+    "6": {
+        "complete_token": 52
+    },
+    "7": {
+        "complete_token": 53
+    },
+    "8": {
+        "complete_token": 54
+    },
+    "9": {
+        "complete_token": 55
+    },
+    "I": {
+        "complete_token": 56
+    },
+    "T": {
+        "complete_token": 57,
+        "h": {
+            "complete_token": 58,
+            "i": {
+                "s": {
+                    "complete_token": 59
+                }
+            }
+        }
+    },
+    "a": {
+        "complete_token": 60,
+        "l": {
+            "complete_token": 61,
+            "l": {
+                "complete_token": 62
+            }
+        },
+        "n": {
+            "complete_token": 63,
+            "d": {
+                "complete_token": 64
+            }
+        }
+    },
+    "b": {
+        "complete_token": 65,
+        "l": {
+            "a": {
+                "complete_token": 66
+            }
+        },
+        "r": {
+            "complete_token": 67,
+            "o": {
+                "complete_token": 68,
+                "w": {
+                    "complete_token": 69,
+                    "n": {
+                        "complete_token": 70
+                    }
+                }
+            }
+        }
+    },
+    "c": {
+        "complete_token": 71,
+        "h": {
+            "complete_token": 72,
+            "a": {
+                "complete_token": 73,
+                "r": {
+                    "complete_token": 74,
+                    "a": {
+                        "complete_token": 75,
+                        "c": {
+                            "t": {
+                                "complete_token": 76,
+                                "e": {
+                                    "r": {
+                                        "s": {
+                                            "complete_token": 77
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "o": {
+            "complete_token": 78,
+            "r": {
+                "complete_token": 79,
+                "r": {
+                    "e": {
+                        "complete_token": 80,
+                        "c": {
+                            "t": {
+                                "complete_token": 81,
+                                "l": {
+                                    "complete_token": 82,
+                                    "y": {
+                                        "complete_token": 83
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "t": {
+            "complete_token": 84
+        }
+    },
+    "d": {
+        "complete_token": 85,
+        "o": {
+            "complete_token": 86,
+            "g": {
+                "complete_token": 87
+            }
+        }
+    },
+    "e": {
+        "complete_token": 88,
+        "r": {
+            "complete_token": 89,
+            "s": {
+                "complete_token": 90
+            }
+        }
+    },
+    "f": {
+        "complete_token": 91,
+        "o": {
+            "complete_token": 92,
+            "x": {
+                "complete_token": 93
+            }
+        }
+    },
+    "g": {
+        "complete_token": 94
+    },
+    "h": {
+        "complete_token": 95,
+        "e": {
+            "complete_token": 96,
+            "n": {
+                "complete_token": 97
+            }
+        }
+    },
+    "i": {
+        "complete_token": 98,
+        "n": {
+            "complete_token": 99,
+            "c": {
+                "complete_token": 100,
+                "l": {
+                    "complete_token": 101,
+                    "u": {
+                        "complete_token": 102,
+                        "d": {
+                            "complete_token": 103,
+                            "0": {
+                                "complete_token": 104,
+                                "e": {
+                                    "complete_token": 105
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "s": {
+            "complete_token": 106
+        }
+    },
+    "j": {
+        "complete_token": 107,
+        "u": {
+            "complete_token": 108,
+            "m": {
+                "p": {
+                    "complete_token": 109,
+                    "s": {
+                        "complete_token": 110
+                    }
+                }
+            }
+        }
+    },
+    "k": {
+        "complete_token": 111,
+        "e": {
+            "complete_token": 112
+        }
+    },
+    "l": {
+        "complete_token": 113,
+        "a": {
+            "complete_token": 114,
+            "z": {
+                "complete_token": 115,
+                "y": {
+                    "complete_token": 116
+                }
+            }
+        },
+        "i": {
+            "complete_token": 117,
+            "k": {
+                "e": {
+                    "complete_token": 118
+                }
+            }
+        }
+    },
+    "m": {
+        "complete_token": 119,
+        "a": {
+            "complete_token": 120,
+            "k": {
+                "e": {
+                    "complete_token": 121
+                }
+            }
+        },
+        "p": {
+            "complete_token": 122
+        }
+    },
+    "n": {
+        "complete_token": 123,
+        "u": {
+            "complete_token": 124,
+            "m": {
+                "complete_token": 125,
+                "b": {
+                    "complete_token": 126,
+                    "e": {
+                        "r": {
+                            "s": {
+                                "complete_token": 127
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "o": {
+        "complete_token": 128,
+        "v": {
+            "complete_token": 129,
+            "e": {
+                "r": {
+                    "complete_token": 130
+                }
+            }
+        }
+    },
+    "p": {
+        "complete_token": 131,
+        "e": {
+            "complete_token": 132,
+            "n": {
+                "complete_token": 133
+            }
+        },
+        "r": {
+            "e": {
+                "complete_token": 134
+            }
+        }
+    },
+    "q": {
+        "complete_token": 135,
+        "u": {
+            "complete_token": 136,
+            "i": {
+                "complete_token": 137,
+                "c": {
+                    "complete_token": 138,
+                    "k": {
+                        "complete_token": 139
+                    }
+                }
+            }
+        }
+    },
+    "r": {
+        "complete_token": 140,
+        "e": {
+            "complete_token": 141
+        }
+    },
+    "s": {
+        "complete_token": 142,
+        "a": {
+            "complete_token": 143,
+            "m": {
+                "p": {
+                    "complete_token": 144,
+                    "l": {
+                        "complete_token": 145,
+                        "e": {
+                            "complete_token": 146
+                        }
+                    }
+                }
+            }
+        },
+        "p": {
+            "e": {
+                "complete_token": 147,
+                "c": {
+                    "complete_token": 148,
+                    "i": {
+                        "complete_token": 149,
+                        "a": {
+                            "l": {
+                                "complete_token": 150
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "u": {
+            "complete_token": 151,
+            "r": {
+                "e": {
+                    "complete_token": 152
+                }
+            }
+        }
+    },
+    "t": {
+        "complete_token": 153,
+        "e": {
+            "complete_token": 154,
+            "x": {
+                "complete_token": 155,
+                "t": {
+                    "complete_token": 156
+                }
+            }
+        },
+        "h": {
+            "e": {
+                "complete_token": 157,
+                "y": {
+                    "complete_token": 158
+                }
+            }
+        },
+        "o": {
+            "complete_token": 159,
+            "k": {
+                "e": {
+                    "complete_token": 160,
+                    "n": {
+                        "complete_token": 161,
+                        "i": {
+                            "complete_token": 162,
+                            "z": {
+                                "complete_token": 163,
+                                "e": {
+                                    "complete_token": 164,
+                                    "d": {
+                                        "complete_token": 165
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "u": {
+        "complete_token": 166
+    },
+    "v": {
+        "complete_token": 167
+    },
+    "w": {
+        "complete_token": 168,
+        "a": {
+            "n": {
+                "complete_token": 169,
+                "t": {
+                    "complete_token": 170
+                }
+            }
+        }
+    },
+    "x": {
+        "complete_token": 171
+    },
+    "y": {
+        "complete_token": 172
+    },
+    "z": {
+        "complete_token": 173
+    }
+}

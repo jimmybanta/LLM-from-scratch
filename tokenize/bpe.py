@@ -19,10 +19,11 @@ class BPETokenizer:
     '''
     
     def __init__(self, 
-                 model_dir=None, 
-                 vocab_file=None,
-                 corpus=None, 
-                 vocab_size=1024):
+                    model_dir=None, 
+                    vocab_file=None,
+                    lookup_table_file=None,
+                    corpus=None, 
+                    vocab_size=1024):
         '''
         Initialize the BPETokenizer.
         
@@ -42,9 +43,15 @@ class BPETokenizer:
 
         # if a vocab file is given, then read in the vocab
         if vocab_file:
-            self.vocab = self.read_vocab_from_file(vocab_file)
+            self.vocab = self.read_from_file(vocab_file)
         else:
             self.vocab = []
+
+        # if a lookup table file is given, then read in the lookup table
+        if lookup_table_file:
+            self.lookup_table = self.read_from_file(lookup_table_file)
+        else:
+            self.lookup_table = {}
 
         self.vocab_size = vocab_size
 
@@ -254,34 +261,37 @@ class BPETokenizer:
 
         # add the special characters to the front
         self.vocab = self.special_characters + self.vocab
+
+        # generate the lookup table
+        self.generate_lookup_table()
         
-    def write_vocab_to_file(self, filename):
+    def write_to_file(self, filename):
         '''
-        Write the vocabulary to a json file.
+        Writes an object to a json file.
 
         Parameters
         ----------
         filename : str
-            The filename to write the vocabulary to.
+            The filename to write to.
         '''
 
         with open(filename, 'w') as f:
             json.dump(self.vocab, f, indent=4)
     
-    def read_vocab_from_file(self, filename):
+    def read_from_file(self, filename):
         '''
-        Read the vocabulary from a json file.
+        Reads an object from a json file.
 
         Parameters
         ----------
         filename : str
-            The filename to read the vocabulary from.
+            The filename to read from.
         '''
 
         with open(filename, 'r') as f:
-            vocab = json.load(f)
+            data = json.load(f)
 
-        return vocab
+        return data
     
     def read_special_char_from_file(self, filename):
         '''
@@ -297,6 +307,48 @@ class BPETokenizer:
             special_characters = json.load(f)
 
         return special_characters
+
+    def generate_lookup_table(self):
+        '''
+        From the vocab, generates a lookup table to allow for easy lookup of tokens.
+        The lookup table is structured as a nested dictionary - so given a token,
+        you iteratively go through the characters until you arrive at the index of the token.
+
+        Returns
+        -------
+        dict
+            The lookup table.
+        '''
+
+        lookup_table = {'special': {}}
+
+        for i, token in enumerate(self.vocab):
+
+            
+            if token in self.special_characters:
+                
+                lookup_table['special'][token] = i
+
+            else:
+                current_dict = lookup_table
+
+                # go through each character in the token
+                for char in token:
+
+                    # if the character is not in the current dictionary, add it
+                    if char not in current_dict:
+                        current_dict[char] = {}
+                    
+                    # move to the next dictionary
+                    current_dict = current_dict[char]
+
+
+                # add the token to the current dictionary
+                current_dict['complete_token'] = i
+                
+
+
+        self.lookup_table = lookup_table
 
     def lookup_brute_search(self, token: str) -> int:
         '''
@@ -356,8 +408,40 @@ class BPETokenizer:
         
         return -1
 
+    def lookup_table_search(self, token: str) -> int:
+        '''
+        Given a token, uses the lookup table to find the index of the token.
 
-        
+        Parameters
+        ----------
+        token : str
+            The token to find the index of.
+
+        Returns
+        -------
+        int
+            The index of the token.
+        '''
+
+        if not self.lookup_table:
+            raise ValueError('Lookup table not generated.')
+
+        current_dict = self.lookup_table
+
+        if token in current_dict['special']:
+            return current_dict['special'][token]
+
+        for char in token:
+
+            if char not in current_dict:
+                return -1
+
+            current_dict = current_dict[char]
+
+        return current_dict['complete_token']
+
+
+
     def encode(self, text: str) -> List[int]:
         '''
         Given text, encodes it using the vocabulary.
@@ -391,6 +475,7 @@ class NaiveBPETokenizer(BPETokenizer):
     def __init__(self, 
                  model_dir=None,
                  vocab_file=None,
+                 lookup_table_file=None,
                  corpus=None,
                  vocab_size=1024):
         '''
@@ -404,6 +489,7 @@ class NaiveBPETokenizer(BPETokenizer):
 
         super().__init__(model_dir=model_dir, 
                          vocab_file=vocab_file, 
+                         lookup_table_file=lookup_table_file,
                          corpus=corpus, 
                          vocab_size=vocab_size)
         
