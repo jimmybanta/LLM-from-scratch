@@ -16,28 +16,36 @@ In an effort to gain a deep understanding of LLM's (and their underlying archite
 ### Transformer Implementation
 
 - [ ] Data Pre-Processing
-  - [ ] Tokenizer - train a tokenizer from scratch -- using BPE
+  
+  
+  
+  - [x] Tokenizer - train a tokenizer from scratch -- using BPE
     - [x] normalization
-    - [ ] pre-tokenization - two methods to try
-      - [x] 'Naive method' - have space, newline, tab, punctuation as special characters (along with <endoftext>)
-      - [ ] GPT method - include spaces 
+    - [x] pre-tokenization - 'Naive method' - have space, newline, tab, punctuation as special characters (along with <endoftext>, <unknown>)
     - [x] Training
-      - [ ] optimize later?
     - [x] vocab -- save to file, read from file
     - [x] lookup - 3 methods for retrieving token indices
       - [x] brute force search
       - [x] binary search
       - [x] hash table
     - [x] encoder
-      - [ ] optimize later?
     - [x] decoder
-    - [ ] later - train a byte-level BPE tokenizer?
+    - [ ] later
+      - [ ]  train a byte-level BPE tokenizer?
+      - [ ] optimize train loop?
+      - [ ] optimize encoder?
+    
   - [ ] Word Embedding - train a word embedder from scratch?
   - [ ] Positional Encoding
+  
 - [ ] Attention
+
 - [ ] Neural Network
+
 - [ ] Normalization
+
 - [ ] Residual Connections
+
 - [ ] Output layer
 
 
