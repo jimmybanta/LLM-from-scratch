@@ -54,7 +54,14 @@ Added functions to write the vocab to a json file, and read it from a json file.
 Encoding - given tokens, how do I convert them to their integer values?
 - most basic method - brute force search through the vocab
 - more efficient method - binary search through the vocab, sorted alphabetically
-- potentially even more efficient - have a hash table that stores the vocab by first character, then second character, etc. 
+- potentially even more efficient - have a hash table that stores the vocab by first character, then second character, etc - so it's a really quick lookup.
 
 Try all 3, compare times.
 
+
+### Monday - 11/18/24
+
+Completed brute and binary search.
+
+Changed special character mechanism so I have a file that lists the special characters, and it reads them in - so I can add any special characters I want.
+Had some trouble with puncutation - there were characters that weren't included in string.punctuation, but seem like punctuation to me (e.g. {), so I added those in.

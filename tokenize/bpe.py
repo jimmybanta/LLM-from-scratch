@@ -18,9 +18,11 @@ class BPETokenizer:
     A tokenizer that uses Byte Pair Encoding (BPE) to tokenize text.
     '''
     
-    def __init__(self, model_dir, 
+    def __init__(self, 
+                 model_dir=None, 
                  vocab_file=None,
-                 corpus=None, vocab_size=1024):
+                 corpus=None, 
+                 vocab_size=1024):
         '''
         Initialize the BPETokenizer.
         
@@ -30,9 +32,10 @@ class BPETokenizer:
             The corpus used to train the tokenizer. Default is None.
         '''
 
-        # the directory to save the model
+        # the directory to save the model (optional)
         self.model_dir = model_dir
-        Path(self.model_dir).mkdir(parents=True, exist_ok=True)
+        if model_dir:
+            Path(self.model_dir).mkdir(parents=True, exist_ok=True)
 
         # the corpus used to train the tokenizer
         self.corpus = corpus
@@ -142,17 +145,21 @@ class BPETokenizer:
         # copy the vocab
         vocab = self.vocab.copy()
 
-        # loop until the vocab size is reached
-        while len(vocab) < self.vocab_size:
+        last_combo = ''
 
-            print(f'Working on vocab # {len(vocab)}')
+        # loop until the vocab size is reached
+        ## taking into account the special characters
+        while len(vocab) < self.vocab_size - len(self.special_characters):
 
             # combos will store the frequency of the character combos
             combos = {}
 
             # create the combos
+
+            # go through each word in the corpus
             for word, word_info in word_counts.items():
                 
+                # go through each token in the word
                 for i in range(len(word_info['tokens'])):
 
                     if i == 0:
@@ -172,9 +179,15 @@ class BPETokenizer:
             if len(combos) == 0:
                 print('No combos found.')
                 break
-
+                
             # get the most frequent combo
             most_frequent = combos[0][0]
+
+            # if the most frequent combo is the same as the last combo, break
+            if most_frequent == last_combo:
+                break
+
+            last_combo = most_frequent
 
             # update the vocab with the most frequent combo
             vocab.append(most_frequent)
@@ -206,7 +219,11 @@ class BPETokenizer:
                         new_tokens.append(token)
 
                     word_info['tokens'] = new_tokens
-        
+
+            print(f'Added {most_frequent} to vocab. Vocabulary size: {len(vocab)}')
+
+            
+                
         return vocab
 
     def train(self):
@@ -215,9 +232,6 @@ class BPETokenizer:
 
         Updates self.vocab with the vocabulary it is learning through training.
         '''
-
-        # add the special characters to the vocab
-        self.vocab = self.special_characters
 
         # normalize the corpus
         corpus = self.normalize(self.corpus)
@@ -229,18 +243,17 @@ class BPETokenizer:
 
         initial_vocab, word_counts = self.get_vocab_word_counts(corpus_split)
 
-        print(word_counts)
-
         # add the initial vocab to the vocab
         self.vocab = self.vocab + initial_vocab
         
-        print(self.vocab)
-
-        # update the vocab using BPE algorithm
+        # update the vocab using BPE
         self.vocab = self.update_vocab(word_counts)
 
         # sort the vocab
         self.vocab = sorted(self.vocab)
+
+        # add the special characters to the front
+        self.vocab = self.special_characters + self.vocab
         
     def write_vocab_to_file(self, filename):
         '''
@@ -269,6 +282,21 @@ class BPETokenizer:
             vocab = json.load(f)
 
         return vocab
+    
+    def read_special_char_from_file(self, filename):
+        '''
+        Read the special characters from a json file.
+
+        Parameters
+        ----------
+        filename : str
+            The filename to read the special characters from.
+        '''
+
+        with open(filename, 'r') as f:
+            special_characters = json.load(f)
+
+        return special_characters
 
     def lookup_brute_search(self, token: str) -> int:
         '''
@@ -290,6 +318,45 @@ class BPETokenizer:
                 return i
         
         return -1
+        
+    def lookup_binary_search(self, token: str) -> int:
+        '''
+        Given a token, does a binary search to find the index of the token.
+
+        Parameters
+        ----------
+        token : str
+            The token to find the index of.
+
+        Returns
+        -------
+        int
+            The index of the token.
+        '''
+
+        # if token is in special characters, then we can brute force search
+        # as all the special characters are front-loaded in the vocab
+        if token in self.special_characters:
+            return self.lookup_brute_search(token)
+
+
+        low = len(self.special_characters)
+        high = len(self.vocab) - 1
+
+        while low <= high:
+                
+            mid = (low + high) // 2
+
+            if self.vocab[mid] == token:
+                return mid
+            elif self.vocab[mid] < token:
+                low = mid + 1
+            else:
+                high = mid - 1
+        
+        return -1
+
+
         
     def encode(self, text: str) -> List[int]:
         '''
@@ -321,9 +388,11 @@ class NaiveBPETokenizer(BPETokenizer):
     that don't get included into the merges.
     '''
 
-    def __init__(self, model_dir, 
+    def __init__(self, 
+                 model_dir=None,
                  vocab_file=None,
-                 corpus=None):
+                 corpus=None,
+                 vocab_size=1024):
         '''
         Initialize the NaiveBPETokenizer.
         
@@ -333,10 +402,15 @@ class NaiveBPETokenizer(BPETokenizer):
             The corpus used to train the tokenizer. Default is None.
         '''
 
-        super().__init__(model_dir, vocab_file=vocab_file, corpus=corpus)
+        super().__init__(model_dir=model_dir, 
+                         vocab_file=vocab_file, 
+                         corpus=corpus, 
+                         vocab_size=vocab_size)
+        
+        # special characters
+        special_char_filepath = os.path.join(os.getenv('HOME_DIR'), 'tokenize', 'assets', 'naive_bpe_special_char.json')
+        self.special_characters = self.read_special_char_from_file(special_char_filepath)
 
-        self.special_characters = ['<space>', '<newline>', '<tab>', '<endoftext>', '<unknown>']
-        self.special_characters = self.special_characters + [mark for mark in string.punctuation]
 
     def pre_tokenize(self, input: list) -> List[str]:
         '''

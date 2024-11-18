@@ -1,5 +1,107 @@
 import pytest
+import os
+from dotenv import load_dotenv
+
 from tokenize.bpe import BPETokenizer, NaiveBPETokenizer
+
+load_dotenv()
+
+def test_bpe_init():
+
+    # Test case 1: Initialize with default parameters
+    bpe = BPETokenizer()
+    assert bpe.model_dir is None
+    assert bpe.corpus is None
+    assert bpe.vocab == []
+    assert bpe.vocab_size == 1024
+
+    # Test case 2: Initialize with custom parameters
+    model_dir = os.path.join(os.getenv('TESTS_DIR'), 'tokenize_tests', 'model_dirs', 'test_bpe_model_dir')
+    corpus = ["This is a test corpus."]
+    vocab_file = os.path.join(os.getenv('TESTS_DIR'), 'tokenize_tests', 'assets', 'small_vocab.json')
+    bpe = BPETokenizer(model_dir=model_dir, corpus=corpus, vocab_file=vocab_file, vocab_size=500)
+    assert bpe.model_dir == model_dir
+    assert bpe.corpus == corpus
+    assert bpe.vocab_size == 500
+    assert bpe.vocab == bpe.read_vocab_from_file(vocab_file)
+
+    # Clean up: Delete the model directory if it exists
+    if os.path.exists(model_dir):
+        os.rmdir(model_dir)
+
+    # Test case 3: Initialize with only vocab_file
+    bpe = BPETokenizer(vocab_file=vocab_file)
+    assert bpe.vocab == bpe.read_vocab_from_file(vocab_file)
+
+    # Test case 4: Initialize with only model_dir
+    bpe = BPETokenizer(model_dir=model_dir)
+    assert bpe.model_dir == model_dir
+    assert bpe.vocab == []
+
+    # Clean up: Delete the model directory if it exists
+    if os.path.exists(model_dir):
+        os.rmdir(model_dir)
+
+    # Test case 5: Initialize with only corpus
+    bpe = BPETokenizer(corpus=corpus)
+    assert bpe.corpus == corpus
+    assert bpe.vocab == []
+
+def test_naive_bpe_init():
+    # Test case 1: Initialize with default parameters
+    bpe = NaiveBPETokenizer()
+    assert bpe.model_dir is None
+    assert bpe.corpus is None
+    assert bpe.vocab == []
+    assert bpe.vocab_size == 1024
+    assert bpe.special_characters == bpe.read_special_char_from_file(
+        os.path.join(os.getenv('HOME_DIR'), 'tokenize', 'assets', 'naive_bpe_special_char.json')
+    )
+
+    # Test case 2: Initialize with custom parameters
+    model_dir = os.path.join(os.getenv('TESTS_DIR'), 'tokenize_tests', 'model_dirs', 'test_bpe_model_dir')
+    corpus = ["This is a test corpus."]
+    vocab_file = os.path.join(os.getenv('TESTS_DIR'), 'tokenize_tests', 'assets', 'small_vocab.json')
+    bpe = NaiveBPETokenizer(model_dir=model_dir, corpus=corpus, vocab_file=vocab_file, vocab_size=500)
+    assert bpe.model_dir == model_dir
+    assert bpe.corpus == corpus
+    assert bpe.vocab_size == 500
+    assert bpe.vocab == bpe.read_vocab_from_file(vocab_file)
+    assert bpe.special_characters == bpe.read_special_char_from_file(
+        os.path.join(os.getenv('HOME_DIR'), 'tokenize', 'assets', 'naive_bpe_special_char.json')
+    )
+
+    # Clean up: Delete the model directory if it exists
+    if os.path.exists(model_dir):
+        os.rmdir(model_dir)
+
+    # Test case 3: Initialize with only vocab_file
+    bpe = NaiveBPETokenizer(vocab_file=vocab_file)
+    assert bpe.vocab == bpe.read_vocab_from_file(vocab_file)
+    assert bpe.special_characters == bpe.read_special_char_from_file(
+        os.path.join(os.getenv('HOME_DIR'), 'tokenize', 'assets', 'naive_bpe_special_char.json')
+    )
+
+    # Test case 4: Initialize with only model_dir
+    bpe = NaiveBPETokenizer(model_dir=model_dir)
+    assert bpe.model_dir == model_dir
+    assert bpe.vocab == []
+    assert bpe.special_characters == bpe.read_special_char_from_file(
+        os.path.join(os.getenv('HOME_DIR'), 'tokenize', 'assets', 'naive_bpe_special_char.json')
+    )
+
+    # Clean up: Delete the model directory if it exists
+    if os.path.exists(model_dir):
+        os.rmdir(model_dir)
+
+    # Test case 5: Initialize with only corpus
+    bpe = NaiveBPETokenizer(corpus=corpus)
+    assert bpe.corpus == corpus
+    assert bpe.vocab == []
+    assert bpe.special_characters == bpe.read_special_char_from_file(
+        os.path.join(os.getenv('HOME_DIR'), 'tokenize', 'assets', 'naive_bpe_special_char.json')
+    )
+
 
 def test_normalize():
     bpe = BPETokenizer()
@@ -99,7 +201,7 @@ def test_get_vocab_word_counts():
         '<space>', '<space>', '<space>', '<space>', '<space>', '<space>', '<space>', '<space>', 'I', '<space>', 
         'want', '<space>', 'to', '<space>', 'includ0e', '<space>', 'special', '<space>', 'characters', '<space>', 
         'like', '<space>', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+', '{', '}', '|', ':', '"', 
-        '<', '>', '?', '[', ']', '\\', ';', "'", ',', '.', '/', '`', '~', '<space>', 'and', '<space>', 'numbers', 
+        '<', '>', '?', '[', ']', ';', "'", ',', '.', '/', '`', '~', '<space>', 'and', '<space>', 'numbers', 
         '<space>', 'like', '<space>', '1234567890', '.', '<newline>', '<space>', '<space>', '<space>', '<space>', 
         '<space>', '<space>', '<space>', '<space>', '<space>', '<space>', '<space>', '<space>', 'to', '<space>', 
         'make', '<space>', 'sure', '<space>', 'they', "'", 're', '<space>', 'all', '<space>', 'pre', '-', 
@@ -217,6 +319,77 @@ def test_update_vocab():
 
     assert bpe.update_vocab(text) == expected
 
+def test_lookup_brute_search():
+
+    test_tokens = ['the', 'there', '@', '<endoftext>', '1', '2', '3', '<newline>', 'yet', 'ying', '~']
+    
+    # Test case 1: small vocab
+    bpe = NaiveBPETokenizer(
+        vocab_file=os.path.join(os.getenv('TESTS_DIR'), 'tokenize_tests', 'assets', 'small_vocab.json'),
+        vocab_size=175
+        )
+    expected = [157, -1, 26, 0, 37, 48, 49, 1, -1, -1, 30]
+    for i, token in enumerate(test_tokens):
+        idx = bpe.lookup_brute_search(token)
+        assert idx == expected[i]
+
+    # Test case 2: medium vocab
+    bpe = NaiveBPETokenizer(
+        vocab_file=os.path.join(os.getenv('TESTS_DIR'), 'tokenize_tests', 'assets', 'medium_vocab.json'),
+        vocab_size=1024
+        )
+    expected = [885, 890, 26, 0, 37, 38, 39, 1, 1017, 1018, 30]
+    for i, token in enumerate(test_tokens):
+        idx = bpe.lookup_brute_search(token)
+        assert idx == expected[i]
+
+    # Test case 3: large vocab
+    bpe = NaiveBPETokenizer(
+        vocab_file=os.path.join(os.getenv('TESTS_DIR'), 'tokenize_tests', 'assets', 'large_vocab.json'),
+        vocab_size=5667
+        )
+    expected = [5053, 5061, 26, 0, 38, 40, 42, 1, 5642, 5643, 30]
+    for i, token in enumerate(test_tokens):
+        idx = bpe.lookup_brute_search(token)
+        assert idx == expected[i]
+
+def test_lookup_binary_search():
+
+    test_tokens = ['the', 'there', '@', '<endoftext>', '1', '2', '3', '<newline>', 'yet', 'ying', '~']
+    
+    # Test case 1: small vocab
+    bpe = NaiveBPETokenizer(
+        vocab_file=os.path.join(os.getenv('TESTS_DIR'), 'tokenize_tests', 'assets', 'small_vocab.json'),
+        vocab_size=175
+        )
+    expected = [157, -1, 26, 0, 37, 48, 49, 1, -1, -1, 30]
+    for i, token in enumerate(test_tokens):
+        idx = bpe.lookup_binary_search(token)
+        assert idx == expected[i]
+
+    # Test case 2: medium vocab
+    bpe = NaiveBPETokenizer(
+        vocab_file=os.path.join(os.getenv('TESTS_DIR'), 'tokenize_tests', 'assets', 'medium_vocab.json'),
+        vocab_size=1024
+        )
+    expected = [885, 890, 26, 0, 37, 38, 39, 1, 1017, 1018, 30]
+    for i, token in enumerate(test_tokens):
+        idx = bpe.lookup_binary_search(token)
+        assert idx == expected[i]
+
+    # Test case 3: large vocab
+    bpe = NaiveBPETokenizer(
+        vocab_file=os.path.join(os.getenv('TESTS_DIR'), 'tokenize_tests', 'assets', 'large_vocab.json'),
+        vocab_size=5667
+        )
+    expected = [5053, 5061, 26, 0, 38, 40, 42, 1, 5642, 5643, 30]
+    for i, token in enumerate(test_tokens):
+        idx = bpe.lookup_binary_search(token)
+        assert idx == expected[i]
+
+
+
+    
 
 
 if __name__ == "__main__":

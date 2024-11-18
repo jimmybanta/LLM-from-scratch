@@ -24,9 +24,9 @@ In an effort to gain a deep understanding of LLM's (and their underlying archite
     - [x] Training
       - [ ] optimize?
     - [x] vocab -- save to file, read from file
-    - [ ] encoder - 3 methods
+    - [ ] encoder - 3 methods for retrieving token indices
       - [x] brute force search
-      - [ ] binary search
+      - [x] binary search
       - [ ] hash table
     - [ ] decoder
     - [ ] later - train a byte-level BPE tokenizer?
