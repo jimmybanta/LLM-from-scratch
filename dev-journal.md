@@ -61,6 +61,7 @@ Try all 3, compare times.
 
 ### Monday - 11/18/24
 
+#### Search
 Completed brute and binary search.
 
 Changed special character mechanism so I have a file that lists the special characters, and it reads them in - so I can add any special characters I want.
@@ -77,6 +78,7 @@ Ran some quick tests on the speed of each method:
     <space> - index: 2: binary speedup: 0.6932013769363167, hash speedup: 1.2888
     <tab> - index: 3: binary speedup: 1.1434262948207172, hash speedup: 1.606942889137738
     <unknown> - index: 4: binary speedup: 0.908675799086758, hash speedup: 1.9944320712694878
+    * - index: 14: binary speedup: 0.7243639167309175, hash speedup: 2.102965864577504
     0 - index: 36: binary speedup: 0.25004190646477065, hash speedup: 1.2506987143655675
     A - index: 49: binary speedup: 0.5688276659281379, hash speedup: 3.002033553634977
     items - index: 3047: binary speedup: 27.002383300460224, hash speedup: 87.4308142629058
@@ -88,9 +90,31 @@ Ran some quick tests on the speed of each method:
     zy - index: 5663: binary speedup: 85.15185856754306, hash speedup: 350.0217391304348
     zz - index: 5664: binary speedup: 86.27349570200573, hash speedup: 373.7982619490999
     zzle - index: 5665: binary speedup: 82.82770270270271, hash speedup: 355.9140145170296
+    thisisatokenthatdoesntexist - index: -1: binary speedup: 81.94699407281965, hash speedup: 180.28949329359165
 
     For special characters, it was all about the same - as expected, because they're the first items in the vocab.
 
     For early items that aren't special tokens, binary is a little slower, which makes sense.
     As we get later, binary gets better.
     Hash table is consistently the fastest.
+
+#### Encoder/Decoder
+
+Created encode and decode functions.
+Encode works by pre-tokenizing, so I have individual words. Then, I iterate backwards thorugh each word - so start with the full word, then the full word minus the last character, then minus the last two characters, etc. 
+    - each time I check to see if a token exists that matches it - if it does, then I encode that token and move onto the rest of the word
+    - if it doesn't, I iterate backwards until I find a match (or it's an unknown token)
+    - there may be a better way to do this? - I'm not sure.
+    - this seems like the most straightforward way to do it, maybe not the most efficient
+
+    Ex. 
+    - 'hello' - 'hello' -> 'hell' -> 'hel' = match
+        - then, 'lo' -> match
+        so it becomes 'hel' + 'lo'
+
+Encoding a single sentence ('the mitochondria is the powerhouse of the cell') took 0.0001 seconds, 
+decoding it took 0.000006 seconds.
+Encoding a paragraph took 0.001 seconds, decoding took 0.00006 seconds
+Encoding Moby Dick (~215k words) took 1.01 seconds, decoding took 0.06 seconds.
+
+I'm fine with this for now - maybe I can optimize later.

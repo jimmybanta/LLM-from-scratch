@@ -22,14 +22,15 @@ In an effort to gain a deep understanding of LLM's (and their underlying archite
       - [x] 'Naive method' - have space, newline, tab, punctuation as special characters (along with <endoftext>)
       - [ ] GPT method - include spaces 
     - [x] Training
-      - [ ] optimize?
+      - [ ] optimize later?
     - [x] vocab -- save to file, read from file
     - [x] lookup - 3 methods for retrieving token indices
       - [x] brute force search
       - [x] binary search
       - [x] hash table
-    - [ ] encoder
-    - [ ] decoder
+    - [x] encoder
+      - [ ] optimize later?
+    - [x] decoder
     - [ ] later - train a byte-level BPE tokenizer?
   - [ ] Word Embedding - train a word embedder from scratch?
   - [ ] Positional Encoding

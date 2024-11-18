@@ -29,8 +29,16 @@ class BPETokenizer:
         
         Parameters
         ----------
+        model_dir : str | None
+            The directory to save the model. Default is None.
+        vocab_file : str | None
+            The file to read the vocabulary from. Default is None.
+        lookup_table_file : str | None
+            The file to read the lookup table from. Default is None.
         corpus : str | None
             The corpus used to train the tokenizer. Default is None.
+        vocab_size : int | 1024
+            The size of the vocabulary. Default is 1024.
         '''
 
         # the directory to save the model (optional)
@@ -437,10 +445,11 @@ class BPETokenizer:
                 return -1
 
             current_dict = current_dict[char]
+        
+        if 'complete_token' not in current_dict:
+            return -1
 
         return current_dict['complete_token']
-
-
 
     def encode(self, text: str) -> List[int]:
         '''
@@ -457,12 +466,89 @@ class BPETokenizer:
             A list of the encoded tokens.
         '''
 
-        # TO DO: implement this method
+        # first, normalize and pre-tokenize the text
+        normalized_text = self.normalize(text)
+        pre_tokenized_text = self.pre_tokenize(normalized_text)
 
-        pass
+        token_values = []
+
+        for word in pre_tokenized_text:
+            
+            if word in self.special_characters:
+                token_values.append(self.lookup_table_search(word))
+                continue
+
+            # start with the full word
+            current_word = word
+
+            while current_word:
+
+                # iterate backwards through the word
+                i = len(current_word)
+
+                while i > 0:
+
+                    # see if the token is in the vocab
+                    token_value = self.lookup_table_search(current_word[:i])
+                
+                    # if it's not in the vocab, then move back a character
+                    if token_value == -1:
+
+                        # if we've reached the end of the word, then no token exists
+                        ## add the unknown token
+                        if i == 1:
+                            token_values.append(0)
+                            current_word = current_word[i:]
+
+                        i -= 1
+                        
+
+                    # if it is in the vocab, then add it to token_values
+                    # and update current_word to be the remaining characters after the token
+                    else:
+                        token_values.append(token_value)
+                        current_word = current_word[i:]
+                        break
 
 
+        return token_values
 
+
+    def decode(self, token_values: List[int]) -> str:
+        '''
+        Given encoded tokens, decodes them using the vocabulary.
+
+        Parameters
+        ----------
+        token_values : List[int]
+            The encoded tokens.
+
+        Returns
+        -------
+        str
+            The decoded text.
+        '''
+
+        special = {
+            "<endoftext>": '',
+            "<newline>": "\n",
+            "<space>": " ",
+            "<tab>": "\t"
+        }
+
+        decoded_text = ''
+
+        # iterate through the token values
+        for token_value in token_values:
+
+            decoded_token = self.vocab[token_value]
+
+            if decoded_token in special:
+                decoded_text += special[decoded_token]
+            else:
+                decoded_text += decoded_token
+
+        return decoded_text
 
         
 
@@ -483,8 +569,16 @@ class NaiveBPETokenizer(BPETokenizer):
         
         Parameters
         ----------
+        model_dir : str | None
+            The directory to save the model. Default is None.
+        vocab_file : str | None
+            The file to read the vocabulary from. Default is None.
+        lookup_table_file : str | None
+            The file to read the lookup table from. Default is None.
         corpus : list | None
             The corpus used to train the tokenizer. Default is None.
+        vocab_size : int | 1024
+            The size of the vocabulary. Default is 1024.
         '''
 
         super().__init__(model_dir=model_dir, 
