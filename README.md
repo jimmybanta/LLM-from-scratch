@@ -1,6 +1,6 @@
 # LLM from scratch
 
-In an effort to gain a deep understanding of LLM's (and their underlying architecture with transformers), I want to implement and train one from scratch.
+In an effort to gain a deep understanding of LLM's (and their underlying architecture with transformers), I want to implement and train one from scratch, without the use of any machine learning library (like PyTorch, Tensorflow, etc.)
 
 ## To Do
 

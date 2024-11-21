@@ -608,7 +608,7 @@ class NaiveBPETokenizer(BPETokenizer):
                          vocab_size=vocab_size)
         
         # special characters
-        special_char_filepath = os.path.join(os.getenv('HOME_DIR'), 'tokenize', 'assets', 'naive_bpe_special_char.json')
+        special_char_filepath = os.path.join(os.getenv('HOME_DIR'), 'pre_process', 'tokenize', 'assets', 'naive_bpe_special_char.json')
         self.special_characters = self.read_special_char_from_file(special_char_filepath)
 
 
