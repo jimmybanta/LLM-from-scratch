@@ -33,3 +33,6 @@ temp/
 
 # ignore any temp files
 temp.*
+
+# log files
+logs/

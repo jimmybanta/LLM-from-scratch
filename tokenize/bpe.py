@@ -1,16 +1,19 @@
-from unidecode import unidecode
-from typing import List
-import string
 import json
+import logging
+import logging.config
 import os
 import re
-import datetime
 from pathlib import Path
-from dotenv import load_dotenv
+from typing import List
 
-from data.import_small import import_full_list
+from dotenv import load_dotenv
+from unidecode import unidecode
 
 load_dotenv()
+
+# configure the logger
+logging.config.fileConfig('logging.conf')
+logger = logging.getLogger(__name__)
 
 
 class BPETokenizer:
@@ -192,7 +195,7 @@ class BPETokenizer:
 
             # if there are no combos, break
             if len(combos) == 0:
-                print('No combos found.')
+                logger.info('No combos found.')
                 break
                 
             # get the most frequent combo
@@ -235,7 +238,7 @@ class BPETokenizer:
 
                     word_info['tokens'] = new_tokens
 
-            print(f'Added {most_frequent} to vocab. Vocabulary size: {len(vocab)}')
+            logger.info(f'Added {most_frequent} to vocab. Vocabulary size: {len(vocab)}')
 
             
                 

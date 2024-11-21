@@ -1,5 +1,21 @@
 # Dev Journal
 
+### Wednesday - 11/20/24
+
+#### Logging
+configured logging for the project - have it log to a file, so I can have some more fine-grained control over catching errors, etc.
+
+#### Word Embedding
+Word embedding seems to work through a self-supervised training task with a neural network - we basically give it our corpus, 
+it learns to predict the next word given the context, and the weights of the neural network are the word embeddings.
+
+I think for now I'll try using a library to train the word embeddings - and later, after I've implemented the neural network part of the transformer, I'll use that NN code to train word-embeddings from scratch as well.
+
+One big question - the tokenizer gives us a vocabulary of subword tokens. Do I get subword embeddings for each of these, or do I need to combine them somehow to get word embeddings?
+Options:
+    - just train subword embeddings 
+        - problem: it seems like the embeddings wouldn't contain much useful information - ex. for the token 'a', what does that mean? It could be a part of so many different words, whereas the embedding for 'apple' would be much more informative.
+        - but this likely won't be as much of a problem as I think - as the vocab size will be big enough that lots of words will be a single token
 
 
 ### Monday - 11/18/24
