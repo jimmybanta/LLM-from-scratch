@@ -35,9 +35,8 @@ In an effort to gain a deep understanding of LLM's (and their underlying archite
       - [ ] optimize train loop?
       - [ ] optimize encoder?
     
-  - [ ] Word Embedding
-    - [ ] first - train using gensim
-      - [ ] 
+  - [x] Word Embedding
+    - [x] first - use gensim to train custom word embeddings
     - [ ] later - train from scratch, using NN implementation developed for later on
   - [ ] Positional Encoding
   

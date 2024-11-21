@@ -487,19 +487,37 @@ def test_encode():
         vocab_size=5667
         )
     
-    # Test case 1: simple sentence
+    # Test case 1: simple sentence, encoded as integers
     text = ['The mitochondria is the powerhouse of the cell!']
     expected = [636, 3, 3487, 3679, 2710, 1941, 728, 3, 3014, 3, 5053, 3, 4010, 2734, 3, 3689, 3, 5053, 3, 1447, 5, 1]
-    assert bpe.encode(text) == expected
+    assert bpe.encode(text, return_integers=True) == expected
 
-    # Test case 2: paragraph
+    # Test case 2: paragraph, encoded as integers
     with open(os.path.join(os.getenv('TESTS_DIR'), 'tokenize_tests', 'assets', 'encode_text.txt'), 'r') as file:
         text = [file.read()]
     
-    with open(os.path.join(os.getenv('TESTS_DIR'), 'tokenize_tests', 'assets', 'encode_values.json'), 'r') as file:
+    with open(os.path.join(os.getenv('TESTS_DIR'), 'tokenize_tests', 'assets', 'encode_integer_values.json'), 'r') as file:
         expected = json.load(file)
 
-    assert bpe.encode(text) == expected
+    assert bpe.encode(text, return_integers=True) == expected
+
+    # Test case 3: simple sentence, encoded as tokens
+    text = ['The mitochondria is the powerhouse of the cell!']
+    expected = ['The', '<space>', 'mit', 'oc', 'hon', 'dri', 'a', '<space>', 
+                'is', '<space>', 'the', '<space>', 'power', 'house', '<space>', 
+                'of', '<space>', 'the', '<space>', 'cell', '!', '<endoftext>']
+    assert bpe.encode(text, return_integers=False) == expected
+
+    # Test case 4: paragraph, encoded as tokens
+    with open(os.path.join(os.getenv('TESTS_DIR'), 'tokenize_tests', 'assets', 'encode_text.txt'), 'r') as file:
+        text = [file.read()]
+
+    with open(os.path.join(os.getenv('TESTS_DIR'), 'tokenize_tests', 'assets', 'encode_token_values.json'), 'r') as file:
+        expected = json.load(file)
+    
+    assert bpe.encode(text, return_integers=False) == expected
+
+
 
 def test_decode():
 
@@ -515,7 +533,7 @@ def test_decode():
     assert bpe.decode(text) == expected
 
     # Test case 2: paragraph
-    with open(os.path.join(os.getenv('TESTS_DIR'), 'tokenize_tests', 'assets', 'encode_values.json'), 'r') as file:
+    with open(os.path.join(os.getenv('TESTS_DIR'), 'tokenize_tests', 'assets', 'encode_integer_values.json'), 'r') as file:
         text = json.load(file)
     
     with open(os.path.join(os.getenv('TESTS_DIR'), 'tokenize_tests', 'assets', 'encode_text.txt'), 'r') as file:

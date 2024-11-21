@@ -454,31 +454,37 @@ class BPETokenizer:
 
         return current_dict['complete_token']
 
-    def encode(self, text: str) -> List[int]:
+    def encode(self, text: list, return_integers=True) -> List[int]:
         '''
-        Given text, encodes it using the vocabulary.
+        Given a list of strings, encodes them using the vocabulary.
+        Either encodes them as their integer values, or as the tokens themselves.
 
         Parameters
         ----------
         text : str
             The text to encode.
+        return_integers : bool | True
+            Whether to return the tokens as integers. Default is True.
 
         Returns
         -------
         List[int]
-            A list of the encoded tokens.
+            A list of the tokens, encoded either as integers or as the tokens themselves.
         '''
 
         # first, normalize and pre-tokenize the text
         normalized_text = self.normalize(text)
         pre_tokenized_text = self.pre_tokenize(normalized_text)
 
-        token_values = []
+        values = []
 
         for word in pre_tokenized_text:
             
             if word in self.special_characters:
-                token_values.append(self.lookup_table_search(word))
+                if return_integers:
+                    values.append(self.lookup_table_search(word))
+                else:
+                    values.append(word)
                 continue
 
             # start with the full word
@@ -500,7 +506,10 @@ class BPETokenizer:
                         # if we've reached the end of the word, then no token exists
                         ## add the unknown token
                         if i == 1:
-                            token_values.append(0)
+                            if return_integers:
+                                values.append(0)
+                            else:
+                                values.append('<unknown>')
                             current_word = current_word[i:]
 
                         i -= 1
@@ -509,15 +518,18 @@ class BPETokenizer:
                     # if it is in the vocab, then add it to token_values
                     # and update current_word to be the remaining characters after the token
                     else:
-                        token_values.append(token_value)
+                        if return_integers:
+                            values.append(token_value)
+                        else:
+                            values.append(current_word[:i])
                         current_word = current_word[i:]
                         break
 
 
-        return token_values
+        return values
 
 
-    def decode(self, token_values: List[int]) -> str:
+    def decode(self, token_values: List[int], integers=True) -> str:
         '''
         Given encoded tokens, decodes them using the vocabulary.
 
@@ -525,6 +537,8 @@ class BPETokenizer:
         ----------
         token_values : List[int]
             The encoded tokens.
+        integers : bool | True
+            Whether the tokens are encoded as integers. Default is True.
 
         Returns
         -------
@@ -544,7 +558,10 @@ class BPETokenizer:
         # iterate through the token values
         for token_value in token_values:
 
-            decoded_token = self.vocab[token_value]
+            if integers:
+                decoded_token = self.vocab[token_value]
+            else:
+                decoded_token = token_value
 
             if decoded_token in special:
                 decoded_text += special[decoded_token]

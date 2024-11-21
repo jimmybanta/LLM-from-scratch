@@ -17,6 +17,13 @@ Options:
         - problem: it seems like the embeddings wouldn't contain much useful information - ex. for the token 'a', what does that mean? It could be a part of so many different words, whereas the embedding for 'apple' would be much more informative.
         - but this likely won't be as much of a problem as I think - as the vocab size will be big enough that lots of words will be a single token
 
+Side note - I wish people would stop using king vs queen as their examples for word embeddings. Be original.
+
+I needed to update the tokenizer encode/decode method to allow for encoding and decoding from token values, rather than the integer values - so that I can encode text into its tokens, and pass those into the word2vec model. 
+- Ultimately this isn't completely necessary - the word2vec will learn the same embeddings whether they're word tokens or their integer values, but for interpretability sake, like checking similar words, etc, it's nice to have the word tokens.
+
+Word embedding with gensim is done! Now, given a corpus, I can tokenize it, then train word embeddings on it.
+
 
 ### Monday - 11/18/24
 
