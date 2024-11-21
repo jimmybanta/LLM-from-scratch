@@ -1,5 +1,35 @@
 # Dev Journal
 
+#### Thursday - 11/21/24
+
+#### More word embeddings
+So I think that encoding tokens as their integers will actually end up being unnecessary - I can encode them as their actual token values, and to convert them into their word embeddings, I'll have a dictionary that maps the token values to their embeddings - so there won't be a need for the token values.
+But the token lookup table will still be useful, as it will save time when tokenizing text - so we don't have to traverse the whole vocab to find the token values.
+
+I want to save the word embeddings in a file, like how I did the vocab and lookup tables. I'll write that method now.
+
+One small, tiny problem I'm noticing - there's sometimes a mismatch between the size of the vocab learned through training the tokenizer, and that when training the word embeddings - this is because the tokenizer learns subword tokens, that then (may) get combined into larger tokens - so when text is tokenized, there's a chance those subwords don't show up as tokens - so no word embedding is generated for it.
+I think with a large enough corpus, this isn't a problem - every token will show up. Or at least the vast, vast majority.
+
+Word embedding saving:
+- gensim offers a couple saving methods
+    - save - saves the whole model
+    - save_word2vec_format - saves just the word vectors
+        - this is more space efficient  
+    - I quickly tested out writing a save function of my own, which saves the word embeddings to a json file - it's more human-readable, but less space efficient.
+    I think I'll just use the save_word2vec_format, both with binary (most space efficient) and non-binary (human readable) formats.
+
+Padding:
+- I need to incorporate padding tokens into my model, so each input is of the same length.
+- Maybe I'll do this in the tokenizer encoder - so just add padding tokens to fill out each input of a batch.
+
+
+#### general cleanup/reorganization
+cleaned up and refactored some things 
+- moved tokenizer and embedder into 'pre_process' module
+- gave each a train module where I can easily train them on my datasets, for testing purposes
+- updated both so that they can handle tokenizing/embedding batches, as opposed to a single chunk of text
+
 ### Wednesday - 11/20/24
 
 #### Logging

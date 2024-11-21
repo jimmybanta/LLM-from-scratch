@@ -7,5 +7,5 @@ Sizes:
 
 naive_bpe_special_char.json - special tokens for the naive BPE tokenizer
 
-SIZE_vocab.json - the vocab list for a specific size
-SIZE_lookup_table.json - the lookup table for a specific size
+SIZE_vocab.json - the vocab list for a corpus with specific size vocab
+SIZE_lookup_table.json - the lookup table for a corpus with specific size vocab

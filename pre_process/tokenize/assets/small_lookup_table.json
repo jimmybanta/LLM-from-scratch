@@ -1,117 +1,118 @@
 {
     "special": {
-        "<unknown>": 0,
-        "<endoftext>": 1,
-        "<newline>": 2,
-        "<space>": 3,
-        "<tab>": 4,
-        "!": 5,
-        "#": 6,
-        "$": 7,
-        "%": 8,
-        "&": 9,
-        "'": 10,
-        "\"": 11,
-        "(": 12,
-        ")": 13,
-        "*": 14,
-        "+": 15,
-        ",": 16,
-        "-": 17,
-        ".": 18,
-        "/": 19,
-        ":": 20,
-        ";": 21,
-        "<": 22,
-        "=": 23,
-        ">": 24,
-        "?": 25,
-        "@": 26,
-        "{": 27,
-        "|": 28,
-        "}": 29,
-        "~": 30,
-        "^": 31,
+        "<pad>": 0,
+        "<unknown>": 1,
+        "<endoftext>": 2,
+        "<newline>": 3,
+        "<space>": 4,
+        "<tab>": 5,
+        "!": 6,
+        "#": 7,
+        "$": 8,
+        "%": 9,
+        "&": 10,
+        "'": 11,
+        "\"": 12,
+        "(": 13,
+        ")": 14,
+        "*": 15,
+        "+": 16,
+        ",": 17,
+        "-": 18,
+        ".": 19,
+        "/": 20,
+        ":": 21,
+        ";": 22,
+        "<": 23,
+        "=": 24,
+        ">": 25,
+        "?": 26,
+        "@": 27,
+        "{": 28,
+        "|": 29,
+        "}": 30,
+        "~": 31,
+        "^": 32,
         "_": 108,
-        "`": 33,
-        "[": 34,
-        "]": 35
+        "`": 34,
+        "[": 35,
+        "]": 36
     },
     "0": {
-        "complete_token": 36
-    },
-    "1": {
         "complete_token": 37
     },
-    "2": {
+    "1": {
         "complete_token": 38
     },
-    "3": {
+    "2": {
         "complete_token": 39
     },
-    "4": {
+    "3": {
         "complete_token": 40
     },
-    "5": {
+    "4": {
         "complete_token": 41
     },
-    "6": {
+    "5": {
         "complete_token": 42
     },
-    "7": {
+    "6": {
         "complete_token": 43
     },
-    "8": {
+    "7": {
         "complete_token": 44
     },
-    "9": {
+    "8": {
         "complete_token": 45
     },
+    "9": {
+        "complete_token": 46
+    },
     "A": {
-        "complete_token": 46,
+        "complete_token": 47,
         "f": {
             "t": {
                 "e": {
                     "r": {
-                        "complete_token": 47
+                        "complete_token": 48
                     }
                 }
             }
         },
         "n": {
-            "complete_token": 48,
+            "complete_token": 49,
             "d": {
-                "complete_token": 49
+                "complete_token": 50
             }
         },
         "s": {
-            "complete_token": 50
+            "complete_token": 51
         }
     },
     "B": {
-        "complete_token": 51,
+        "complete_token": 52,
         "e": {
-            "complete_token": 52
+            "complete_token": 53
         },
         "u": {
             "t": {
-                "complete_token": 53
+                "complete_token": 54
             }
         }
     },
     "C": {
-        "complete_token": 54
+        "complete_token": 55
     },
     "D": {
-        "complete_token": 55,
+        "complete_token": 56,
         "e": {
             "s": {
-                "complete_token": 56,
+                "complete_token": 57,
                 "p": {
                     "i": {
                         "t": {
                             "e": {
-                                "complete_token": 57
+                                "complete_token": 58
                             }
                         }
                     }
@@ -120,95 +121,92 @@
         }
     },
     "E": {
-        "complete_token": 58
-    },
-    "F": {
         "complete_token": 59
     },
-    "G": {
+    "F": {
         "complete_token": 60
     },
+    "G": {
+        "complete_token": 61
+    },
     "H": {
-        "complete_token": 61,
+        "complete_token": 62,
         "e": {
-            "complete_token": 62,
+            "complete_token": 63,
             "r": {
-                "complete_token": 63
+                "complete_token": 64
             }
         },
         "i": {
             "s": {
-                "complete_token": 64
+                "complete_token": 65
             }
         },
         "o": {
             "w": {
-                "complete_token": 65
+                "complete_token": 66
             }
         }
     },
     "I": {
-        "complete_token": 66,
+        "complete_token": 67,
         "f": {
-            "complete_token": 67
-        },
-        "n": {
             "complete_token": 68
         },
-        "t": {
+        "n": {
             "complete_token": 69
+        },
+        "t": {
+            "complete_token": 70
         }
     },
     "J": {
-        "complete_token": 70
-    },
-    "K": {
         "complete_token": 71
     },
-    "L": {
+    "K": {
         "complete_token": 72
     },
-    "M": {
+    "L": {
         "complete_token": 73
     },
+    "M": {
+        "complete_token": 74
+    },
     "N": {
-        "complete_token": 74,
+        "complete_token": 75,
         "o": {
-            "complete_token": 75,
+            "complete_token": 76,
             "t": {
-                "complete_token": 76
+                "complete_token": 77
             }
         }
     },
     "O": {
-        "complete_token": 77,
+        "complete_token": 78,
         "h": {
-            "complete_token": 78
+            "complete_token": 79
         },
         "n": {
-            "complete_token": 79
+            "complete_token": 80
         }
     },
     "P": {
-        "complete_token": 80
-    },
-    "Q": {
         "complete_token": 81
     },
-    "R": {
+    "Q": {
         "complete_token": 82
     },
+    "R": {
+        "complete_token": 83
+    },
     "S": {
-        "complete_token": 83,
+        "complete_token": 84,
         "h": {
             "e": {
-                "complete_token": 84
+                "complete_token": 85
             }
         },
         "o": {
-            "complete_token": 85
-        },
-        "t": {
             "complete_token": 86
         }
     },

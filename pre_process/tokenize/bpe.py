@@ -26,7 +26,9 @@ class BPETokenizer:
                     vocab_file=None,
                     lookup_table_file=None,
                     corpus=None, 
-                    vocab_size=1024):
+                    vocab_size=1024,
+                    input_max_length=256,
+                    padding_token='<pad>'):
         '''
         Initialize the BPETokenizer.
         
@@ -40,8 +42,12 @@ class BPETokenizer:
             The file to read the lookup table from. Default is None.
         corpus : str | None
             The corpus used to train the tokenizer. Default is None.
+            Note: the corpus should be a list of strings, not one big string.
         vocab_size : int | 1024
             The size of the vocabulary. Default is 1024.
+        input_max_length : int | 256
+            The maximum length of an input
+            -- the same as the context window for our LLM.
         '''
 
         # the directory to save the model (optional)
@@ -65,23 +71,25 @@ class BPETokenizer:
             self.lookup_table = {}
 
         self.vocab_size = vocab_size
+        self.input_max_length = input_max_length
+        self.padding_token = padding_token
 
 
-    def normalize(self, input: list, 
+    def normalize(self, input: List[str], 
                   lowercase=False) -> List[str]:
         '''
         Normalize the input text.
 
         Parameters
         ----------
-        input : list
+        input : List[str]
             The input text, as a list of strings.
         lowercase : bool | False
             Whether to lowercase the text. Default is False.
 
         Returns
         -------
-        list[str]
+        List[str]
             The normalized text, as a list of strings.
         '''
 
@@ -103,7 +111,7 @@ class BPETokenizer:
         
         return normalized_text
     
-    def get_vocab_word_counts(self, corpus_split) -> tuple:
+    def get_vocab_word_counts(self, corpus_split: List[List[str]]) -> tuple:
         '''
         Given a split corpus that has been pre-tokenized, 
         gets the initial vocabulary
@@ -111,7 +119,7 @@ class BPETokenizer:
         
         Parameters
         ----------
-        corpus_split : list
+        corpus_split : List[List[str]]
             The pre-tokenized corpus.
             
         Returns
@@ -126,26 +134,29 @@ class BPETokenizer:
         # create the initial vocabulary from the corpus
         # also create the word_counts -- 
         ## contains the words in the corpus, their individual tokens, and the frequency of the word
-        for word in corpus_split:
 
-            # skip our special characters
-            if word in self.special_characters:
-                continue
+        for sentence in corpus_split:
 
-            # if the word is not in the word_counts, add it
-            if word not in word_counts:
-                word_counts[word] = {
-                    'count': 1,
-                    'tokens': [char for char in word]
-                }
-            # otherwise, increment the count
-            else:
-                word_counts[word]['count'] += 1
+            for word in sentence:
 
-            # add characters to the vocab
-            for char in word:
-                if char not in vocab:
-                    vocab.append(char)
+                # skip our special characters
+                if word in self.special_characters:
+                    continue
+
+                # if the word is not in the word_counts, add it
+                if word not in word_counts:
+                    word_counts[word] = {
+                        'count': 1,
+                        'tokens': [char for char in word]
+                    }
+                # otherwise, increment the count
+                else:
+                    word_counts[word]['count'] += 1
+
+                # add characters to the vocab
+                for char in word:
+                    if char not in vocab:
+                        vocab.append(char)
 
         return vocab, word_counts
     
@@ -251,21 +262,25 @@ class BPETokenizer:
         Updates self.vocab with the vocabulary it is learning through training.
         '''
 
+        logger.info('Training tokenizer.')
+
         # normalize the corpus
         corpus = self.normalize(self.corpus)
-        print('done normalizing')
+        logger.info('done normalizing')
 
         # pre-tokenize the corpus
         corpus_split = self.pre_tokenize(corpus)
-        print('done pre-tokenizing')
+        logger.info('done pre-tokenizing')
 
         initial_vocab, word_counts = self.get_vocab_word_counts(corpus_split)
+        logger.info('done getting vocab word counts')
 
         # add the initial vocab to the vocab
         self.vocab = self.vocab + initial_vocab
         
         # update the vocab using BPE
         self.vocab = self.update_vocab(word_counts)
+        logger.info('done updating vocab')
 
         # sort the vocab
         self.vocab = sorted(self.vocab)
@@ -276,7 +291,7 @@ class BPETokenizer:
         # generate the lookup table
         self.generate_lookup_table()
         
-    def write_to_file(self, filename):
+    def write_to_file(self, data, filename):
         '''
         Writes an object to a json file.
 
@@ -287,7 +302,7 @@ class BPETokenizer:
         '''
 
         with open(filename, 'w') as f:
-            json.dump(self.vocab, f, indent=4)
+            json.dump(data, f, indent=4)
     
     def read_from_file(self, filename):
         '''
@@ -454,22 +469,22 @@ class BPETokenizer:
 
         return current_dict['complete_token']
 
-    def encode(self, text: list, return_integers=True) -> List[int]:
+    def encode(self, text: List[str], return_integers=True) -> List[List]:
         '''
-        Given a list of strings, encodes them using the vocabulary.
+        Given a batch (list) of strings, encodes them using the vocabulary.
         Either encodes them as their integer values, or as the tokens themselves.
 
         Parameters
         ----------
-        text : str
+        text : List[str]
             The text to encode.
         return_integers : bool | True
             Whether to return the tokens as integers. Default is True.
 
         Returns
         -------
-        List[int]
-            A list of the tokens, encoded either as integers or as the tokens themselves.
+        List[List[int/str]]
+            A batch (list) of lists of tokens, encoded either as integers or as the tokens themselves.
         '''
 
         # first, normalize and pre-tokenize the text
@@ -478,72 +493,86 @@ class BPETokenizer:
 
         values = []
 
-        for word in pre_tokenized_text:
-            
-            if word in self.special_characters:
-                if return_integers:
-                    values.append(self.lookup_table_search(word))
-                else:
-                    values.append(word)
-                continue
+        # iterate through each sentence of the batch
+        for sentence in pre_tokenized_text:
 
-            # start with the full word
-            current_word = word
+            sentence_values = []
 
-            while current_word:
-
-                # iterate backwards through the word
-                i = len(current_word)
-
-                while i > 0:
-
-                    # see if the token is in the vocab
-                    token_value = self.lookup_table_search(current_word[:i])
+            # iterate through each token in the sentence
+            for word in sentence:
                 
-                    # if it's not in the vocab, then move back a character
-                    if token_value == -1:
-
-                        # if we've reached the end of the word, then no token exists
-                        ## add the unknown token
-                        if i == 1:
-                            if return_integers:
-                                values.append(0)
-                            else:
-                                values.append('<unknown>')
-                            current_word = current_word[i:]
-
-                        i -= 1
-                        
-
-                    # if it is in the vocab, then add it to token_values
-                    # and update current_word to be the remaining characters after the token
+                if word in self.special_characters:
+                    if return_integers:
+                        sentence_values.append(self.lookup_table_search(word))
                     else:
-                        if return_integers:
-                            values.append(token_value)
-                        else:
-                            values.append(current_word[:i])
-                        current_word = current_word[i:]
-                        break
+                        sentence_values.append(word)
+                    continue
 
+                # start with the full word
+                current_word = word
+
+                while current_word:
+
+                    # iterate backwards through the word
+                    i = len(current_word)
+
+                    while i > 0:
+
+                        # see if the token is in the vocab
+                        token_value = self.lookup_table_search(current_word[:i])
+                    
+                        # if it's not in the vocab, then move back a character
+                        if token_value == -1:
+
+                            # if we've reached the end of the word, then no token exists
+                            ## add the unknown token
+                            if i == 1:
+                                if return_integers:
+                                    sentence_values.append(0)
+                                else:
+                                    sentence_values.append('<unknown>')
+                                current_word = current_word[i:]
+
+                            i -= 1
+                            
+
+                        # if it is in the vocab, then add it to token_values
+                        # and update current_word to be the remaining characters after the token
+                        else:
+                            if return_integers:
+                                sentence_values.append(token_value)
+                            else:
+                                sentence_values.append(current_word[:i])
+                            current_word = current_word[i:]
+                            break
+
+            # we need to fill out the rest of the sentence with padding
+            while len(sentence_values) < self.input_max_length:
+
+                if return_integers:
+                    sentence_values.append(self.lookup_table_search('<pad>'))
+                else:
+                    sentence_values.append('<pad>')
+
+            values.append(sentence_values)
 
         return values
 
-
-    def decode(self, token_values: List[int], integers=True) -> str:
+    def decode(self, token_values: List[List], integers=True) -> List[str]:
         '''
         Given encoded tokens, decodes them using the vocabulary.
 
         Parameters
         ----------
-        token_values : List[int]
-            The encoded tokens.
+        token_values : List[List[int/str]]
+            A batch of encoded sentences.
         integers : bool | True
             Whether the tokens are encoded as integers. Default is True.
 
         Returns
         -------
-        str
-            The decoded text.
+        List[str]
+            A batch of decoded text.
         '''
 
         special = {
@@ -553,22 +582,31 @@ class BPETokenizer:
             "<tab>": "\t"
         }
 
-        decoded_text = ''
+        decoded_batch = []
 
-        # iterate through the token values
-        for token_value in token_values:
+        for sentence in token_values:
 
-            if integers:
-                decoded_token = self.vocab[token_value]
-            else:
-                decoded_token = token_value
+            decoded_text = ''
 
-            if decoded_token in special:
-                decoded_text += special[decoded_token]
-            else:
-                decoded_text += decoded_token
+            # iterate through the token values
+            for token_value in sentence:
 
-        return decoded_text
+                if integers:
+                    decoded_token = self.vocab[token_value]
+                else:
+                    decoded_token = token_value
+
+                if decoded_token in special:
+                    decoded_text += special[decoded_token]
+                else:
+                    decoded_text += decoded_token
+                
+                if decoded_token == '<endoftext>':
+                    break
+            
+            decoded_batch.append(decoded_text)
+
+        return decoded_batch
 
         
 
@@ -583,7 +621,10 @@ class NaiveBPETokenizer(BPETokenizer):
                  vocab_file=None,
                  lookup_table_file=None,
                  corpus=None,
-                 vocab_size=1024):
+                 vocab_size=1024,
+                    input_max_length=256,
+                    padding_token='<pad>'
+                 ):
         '''
         Initialize the NaiveBPETokenizer.
         
@@ -599,33 +640,40 @@ class NaiveBPETokenizer(BPETokenizer):
             The corpus used to train the tokenizer. Default is None.
         vocab_size : int | 1024
             The size of the vocabulary. Default is 1024.
+        input_max_length : int | 256
+            The maximum length of an input
+            -- the same as the context window for our LLM.
+        padding_token : str | '<pad>'
+            The token to use for padding. Default is '<pad>'.
         '''
 
         super().__init__(model_dir=model_dir, 
                          vocab_file=vocab_file, 
                          lookup_table_file=lookup_table_file,
                          corpus=corpus, 
-                         vocab_size=vocab_size)
+                         vocab_size=vocab_size,
+                         input_max_length=input_max_length,
+                         padding_token=padding_token)
         
         # special characters
         special_char_filepath = os.path.join(os.getenv('HOME_DIR'), 'pre_process', 'tokenize', 'assets', 'naive_bpe_special_char.json')
         self.special_characters = self.read_special_char_from_file(special_char_filepath)
 
 
-    def pre_tokenize(self, input: list) -> List[str]:
+    def pre_tokenize(self, input: List[str]) -> List[List[str]]:
         '''
-        Pre-tokenize the input text.
+        Pre-tokenize an input batch of strings.
         Splits along whitespace (space, newline, tab) and punctuation/special characters.
 
         Parameters
         ----------
-        input : list
+        input : List[str]
             The input text, as a list of strings.
 
         Returns
         -------
-        List[str]
-            The pre-tokenized text.
+        List[List[str]]
+            The pre-tokenized batch.
         '''
 
         if type(input) != list:
@@ -637,11 +685,13 @@ class NaiveBPETokenizer(BPETokenizer):
             '\t': '<tab>'
         }
 
-        # text-split will store the pre-tokenized text
+        # text-split will store the pre-tokenized batch
         text_split = []
 
         # iterate through all the text in the input
         for text in input:
+
+            current_split = []
 
             # remove leading and trailing white space
             text = text.strip()
@@ -655,10 +705,10 @@ class NaiveBPETokenizer(BPETokenizer):
                         
                     # if current_word is not empty, add it to words_split
                     if current_word != '':
-                        text_split.append(current_word)
+                        current_split.append(current_word)
 
                     # add the special character to words_split
-                    text_split.append(space_dict[char])
+                    current_split.append(space_dict[char])
 
                     # reset current_word
                     current_word = ''
@@ -667,9 +717,9 @@ class NaiveBPETokenizer(BPETokenizer):
                 elif bool(re.match(r'[^\w\s]', char)):
 
                     if current_word != '':
-                        text_split.append(current_word)
+                        current_split.append(current_word)
 
-                    text_split.append(char)
+                    current_split.append(char)
                     current_word = ''
                 
                 # otherwise, add the character to current_word
@@ -678,10 +728,13 @@ class NaiveBPETokenizer(BPETokenizer):
             
             # add the last word to words_split
             if current_word != '':
-                text_split.append(current_word)
+                current_split.append(current_word)
             
             # add end of text token
-            text_split.append('<endoftext>')
+            current_split.append('<endoftext>')
+
+            # add the current_split to text_split
+            text_split.append(current_split)
 
         return text_split
     

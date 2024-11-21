@@ -9,6 +9,7 @@ load_dotenv()
 
 # tokens to use to test lookup methods
 TEST_TOKENS = [
+        "<pad>",
         "<unknown>",
         "<endoftext>",
         "<newline>",
@@ -17,6 +18,7 @@ TEST_TOKENS = [
         "*",
         "0",
         "A",
+        "H",
         "items", 
         "nature",
         "spite",
@@ -30,9 +32,9 @@ TEST_TOKENS = [
     ]
 
 EXPECTED_INDICES = {
-    'tiny': [0, 1, 2, 3, 4, 14, 36, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    'small': [0, 1, 2, 3, 4, 14, 36, 46, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    'medium': [0, 1, 2, 3, 4, 14, 36, 49, 3047, 3578, 4756, 5356, 5661, 5662, 5663, 5664, 5665, -1]
+    'tiny': [0, 1, 2, 3, 4, 5, 15, -1, -1, 37, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    'small': [0, 1, 2, 3, 4, 5, 15, 37, 47, 62, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    'medium': [0, 1, 2, 3, 4, 5, 15, 37, 50, 289, 3048, 3579, 4757, 5357, 5662, 5663, 5664, 5665, 5666, -1]
 }
 
 FILEPATHS = {
@@ -51,8 +53,6 @@ FILEPATHS = {
     'encode_token_values': os.path.join(os.getenv('TESTS_DIR'), 'pre_process_tests', 'tokenize_tests', 'assets', 'encode_token_values.json'),
     'encode_integer_values': os.path.join(os.getenv('TESTS_DIR'), 'pre_process_tests', 'tokenize_tests', 'assets', 'encode_integer_values.json')
 }
-
-print(FILEPATHS)
 
 @pytest.fixture
 def bpe():
@@ -83,7 +83,8 @@ def naive_bpe_medium_vocab():
     return NaiveBPETokenizer(
         vocab_file=FILEPATHS['medium_vocab'],
         lookup_table_file=FILEPATHS['medium_lookup_table'],
-        vocab_size=5667
+        vocab_size=5667,
+        input_max_length=100
     )
 
 
@@ -211,32 +212,32 @@ def test_naive_pre_tokenize(naive_bpe):
 
     # Test case 1: Simple sentence
     text = ["Hello, world!"]
-    expected = ["Hello", ",", "<space>", "world", "!", "<endoftext>"]
+    expected = [["Hello", ",", "<space>", "world", "!", "<endoftext>"]]
     assert naive_bpe.pre_tokenize(text) == expected
 
     # Test case 2: Sentence with punctuation
     text = ["How's it going?"]
-    expected = ["How", "'", "s", "<space>", "it", "<space>", "going", "?", "<endoftext>"]
+    expected = [["How", "'", "s", "<space>", "it", "<space>", "going", "?", "<endoftext>"]]
     assert naive_bpe.pre_tokenize(text) == expected
 
     # Test case 3: Sentence with multiple punctuation marks
     text = ["Wait... What?!"]
-    expected = ["Wait", ".", ".", ".", "<space>", "What", "?", "!", "<endoftext>"]
+    expected = [["Wait", ".", ".", ".", "<space>", "What", "?", "!", "<endoftext>"]]
     assert naive_bpe.pre_tokenize(text) == expected
 
     # Test case 4: Sentence with numbers
     text = ["The price is $5.99."]
-    expected = ["The", "<space>", "price", "<space>", "is", "<space>", "$", "5", ".", "99", ".", "<endoftext>"]
+    expected = [["The", "<space>", "price", "<space>", "is", "<space>", "$", "5", ".", "99", ".", "<endoftext>"]]
     assert naive_bpe.pre_tokenize(text) == expected
 
     # Test case 5: Sentence with mixed characters
     text = ["Café-naïve"]
-    expected = ["Café", "-", "naïve", "<endoftext>"]
+    expected = [["Café", "-", "naïve", "<endoftext>"]]
     assert naive_bpe.pre_tokenize(text) == expected
 
     # Test case 6: Sentence with special characters and whitespace
     text = ["Hello\tworld\nHow are you?"]
-    expected = ["Hello", "<tab>", "world", "<newline>", "How", "<space>", "are", "<space>", "you", "?", "<endoftext>"]
+    expected = [["Hello", "<tab>", "world", "<newline>", "How", "<space>", "are", "<space>", "you", "?", "<endoftext>"]]
     assert naive_bpe.pre_tokenize(text) == expected
 
     # Test case 7: complex sentence
@@ -247,7 +248,7 @@ to make sure they're all pre-tokenized correctly.
 
         bla bla bla 10$10
     ''']
-    expected = ['This', '<space>', 'is', '<space>', 'a', '<space>', 'sample', '<space>', 'text', 
+    expected = [['This', '<space>', 'is', '<space>', 'a', '<space>', 'sample', '<space>', 'text', 
                 '.', '.', '<space>', '<newline>', '<tab>', '<newline>', '<space>', '<newline>', '<space>', 
                 '<space>', '<space>', '<space>', '<space>', '<space>', '<space>', '<space>', '<space>', 
                 '<space>', '<space>', '<space>', 'I', '<space>', 'want', '<space>', 'to', '<space>', 
@@ -259,33 +260,58 @@ to make sure they're all pre-tokenized correctly.
                 '<space>', 'all', '<space>', 'pre', '-', 'tokenized', '<space>', 'correctly', '.', 
                 '<newline>', '<newline>', '<space>', '<space>', '<space>', '<space>', '<space>', '<space>', 
                 '<space>', '<space>', 'bla', '<space>', 'bla', '<space>', 'bla', '<space>', 
-                '10', '$', '10', '<endoftext>']
+                '10', '$', '10', '<endoftext>']]
     
+    # Test case 8: batch of sentences
+    text = [
+        'This is a sample text.. \n\t\n',
+        "I want to includ0e special characters like !@#$%^&*()_+{}|:\"<>?[]\;',./`~ and numbers like 1234567890. to make sure they\'re all pre-tokenized correctly.",
+        'bla bla bla 10$10'
+    ]
+    expected = [['This', '<space>', 'is', '<space>', 'a', '<space>', 'sample', '<space>', 'text', '.', '.', '<endoftext>'], 
+                ['I', '<space>', 'want', '<space>', 'to', '<space>', 'includ0e', '<space>', 
+                 'special', '<space>', 'characters', '<space>', 'like', '<space>', '!', '@',
+                   '#', '$', '%', '^', '&', '*', '(', ')', '_', '+', '{', '}', '|', ':', '"', 
+                   '<', '>', '?', '[', ']', '\\', ';', "'", ',', '.', '/', '`', '~', '<space>',
+                     'and', '<space>', 'numbers', '<space>', 'like', '<space>', '1234567890', 
+                     '.', '<space>', 'to', '<space>', 'make', '<space>', 'sure', '<space>', 'they',
+                       "'", 're', '<space>', 'all', '<space>', 'pre', '-', 'tokenized', '<space>',
+                         'correctly', '.', '<endoftext>'], 
+                ['bla', '<space>', 'bla', '<space>', 'bla', '<space>', '10', '$', '10', '<endoftext>']]
+
+
     assert naive_bpe.pre_tokenize(text) == expected
     
 def test_get_vocab_word_counts(naive_bpe):
 
-    # Test case 1: complex sentence
-    text = [
-        'This', '<space>', 'is', '<space>', 'a', '<space>', 'sample', '<space>', 'text', '.', '.', '<space>', 
-        '<newline>', '<tab>', '<newline>', '<space>', '<newline>', '<space>', '<space>', '<space>', '<space>', 
-        '<space>', '<space>', '<space>', '<space>', '<space>', '<space>', '<space>', '<space>', 'I', '<space>', 
-        'want', '<space>', 'to', '<space>', 'includ0e', '<space>', 'special', '<space>', 'characters', '<space>', 
-        'like', '<space>', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+', '{', '}', '|', ':', '"', 
-        '<', '>', '?', '[', ']', ';', "'", ',', '.', '/', '`', '~', '<space>', 'and', '<space>', 'numbers', 
-        '<space>', 'like', '<space>', '1234567890', '.', '<newline>', '<space>', '<space>', '<space>', '<space>', 
-        '<space>', '<space>', '<space>', '<space>', '<space>', '<space>', '<space>', '<space>', 'to', '<space>', 
-        'make', '<space>', 'sure', '<space>', 'they', "'", 're', '<space>', 'all', '<space>', 'pre', '-', 
-        'tokenized', '<space>', 'correctly', '.', '<newline>', '<newline>', '<space>', '<space>', '<space>', 
-        '<space>', '<space>', '<space>', '<space>', '<space>', '<space>', '<space>', '<space>', '<space>', 'bla', 
-        '<space>', 'bla', '<space>', 'bla', '<space>', '10', '$', '10', '<newline>', '<newline>', '<space>', 
-        '<space>', '<space>', '<space>', '<space>', '<space>', '<space>', '<space>', '<space>', '<space>', 
-        '<space>', '<space>', 'the', '<space>', 'quick', '<space>', 'brown', '<space>', 'fox', '<space>', 'jumps', 
-        '<space>', 'over', '<space>', 'the', '<space>', 'lazy', '<space>', 'dog', '.', '<newline>', '<space>', 
-        '<space>', '<space>', '<space>', '<space>', '<space>', '<space>', '<space>', '<space>', '<space>', 
-        '<space>', '<space>', 'the', '<space>', 'hen', '<space>', 'is', '<space>', 'in', '<space>', 'the', 
-        '<space>', 'pen', '.', '<endoftext>'
-    ]
+    # Test case 1: complex batch of 2 sentences
+    text = [['This', '<space>', 'is', '<space>', 'a', '<space>', 'sample', '<space>', 
+             'text', '.', '.', '<space>', '<newline>', '<tab>', '<newline>', '<space>',
+               '<newline>', '<space>', '<space>', '<space>', '<space>', '<space>', 
+               '<space>', '<space>', '<space>', '<space>', '<space>', '<space>',
+                 '<space>', 'I', '<space>', 'want', '<space>', 'to', '<space>', 
+                 'includ0e', '<space>', 'special', '<space>', 'characters', 
+                 '<space>', 'like', '<space>', '!', '@', '#', '$', '%', '^', '&', '*',
+                   '(', ')', '_', '+', '{', '}', '|', ':', '"', '<', '>', '?', '[', ']', 
+                   ';', "'", ',', '.', '/', '`', '~', '<space>', 'and', '<space>', 
+                   'numbers', '<space>', 'like', '<space>', '1234567890', '.', '<newline>',
+                     '<space>', '<space>', '<space>', '<space>', '<space>', '<space>', 
+                     '<space>', '<space>', '<space>', '<space>', '<space>', '<space>', 
+                     'to', '<space>', 'make', '<space>', 'sure', '<space>', 'they', "'", 
+                     're', '<space>', 'all', '<space>', 'pre', '-', 'tokenized', '<space>', 
+                     'correctly', '.', '<endoftext>'], 
+                     ['bla', '<space>', 'bla', '<space>',
+                        'bla', '<space>', '10', '$', '10', '<newline>',
+                          '<newline>', '<space>', '<space>', '<space>', '<space>',
+                            '<space>', '<space>', '<space>', '<space>', '<space>', 
+                            '<space>', '<space>', '<space>', 'the', '<space>', 'quick',
+                            '<space>', 'brown', '<space>', 'fox', '<space>', 'jumps',
+                            '<space>', 'over', '<space>', 'the', '<space>', 'lazy',
+                            '<space>', 'dog', '.', '<newline>', '<space>', '<space>',
+                            '<space>', '<space>', '<space>', '<space>', '<space>',
+                            '<space>', '<space>', '<space>', '<space>', '<space>', 
+                            'the', '<space>', 'hen', '<space>', 'is', '<space>', 
+                            'in', '<space>', 'the', '<space>', 'pen', '.', '<endoftext>']]
 
     expected = (
         ['T', 'h', 'i', 's', 'a', 'm', 'p', 'l', 'e', 't', 'x', 'I', 'w', 'n', 'o', 'c', 'u',
@@ -473,12 +499,14 @@ def test_encode(naive_bpe_medium_vocab):
     
     # Test case 1: simple sentence, encoded as integers
     text = ['The mitochondria is the powerhouse of the cell!']
-    expected = [636, 3, 3487, 3679, 2710, 1941, 728, 3, 3014, 3, 5053, 3, 4010, 2734, 3, 3689, 3, 5053, 3, 1447, 5, 1]
+    expected = [[637, 4, 3488, 3680, 2711, 1942, 729, 4, 3015, 4, 5054, 4, 4011, 2735, 4, 3690, 4, 5054, 4, 1448, 6, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
     assert naive_bpe_medium_vocab.encode(text, return_integers=True) == expected
 
     # Test case 2: paragraph, encoded as integers
+    text = []
     with open(FILEPATHS['encode_text'], 'r') as file:
-        text = [file.read()]
+        for line in file.readlines():
+            text.append(line)
     
     with open(FILEPATHS['encode_integer_values'], 'r') as file:
         expected = json.load(file)
@@ -488,14 +516,18 @@ def test_encode(naive_bpe_medium_vocab):
 
     # Test case 3: simple sentence, encoded as tokens
     text = ['The mitochondria is the powerhouse of the cell!']
-    expected = ['The', '<space>', 'mit', 'oc', 'hon', 'dri', 'a', '<space>', 
+    expected = [['The', '<space>', 'mit', 'oc', 'hon', 'dri', 'a', '<space>', 
                 'is', '<space>', 'the', '<space>', 'power', 'house', '<space>', 
-                'of', '<space>', 'the', '<space>', 'cell', '!', '<endoftext>']
+                'of', '<space>', 'the', '<space>', 'cell', '!', '<endoftext>']]
+    while len(expected[0]) < 100:
+        expected[0].append('<pad>')
     assert naive_bpe_medium_vocab.encode(text, return_integers=False) == expected
 
     # Test case 4: paragraph, encoded as tokens
+    text = []
     with open(FILEPATHS['encode_text'], 'r') as file:
-        text = [file.read()]
+        for line in file.readlines():
+            text.append(line)
 
     with open(FILEPATHS['encode_token_values'], 'r') as file:
         expected = json.load(file)
@@ -505,18 +537,20 @@ def test_encode(naive_bpe_medium_vocab):
 def test_decode(naive_bpe_medium_vocab):
 
     # Test case 1: simple sentence
-    text = [636, 3, 3487, 3679, 2710, 1941, 728, 3, 3014, 3, 5053, 3, 4010, 2734, 3, 3689, 3, 5053, 3, 1447, 5, 1]
-    expected = 'The mitochondria is the powerhouse of the cell!'
+    text = [[637, 4, 3488, 3680, 2711, 1942, 729, 4, 3015, 4, 5054, 4, 4011, 2735, 4, 3690, 4, 5054, 4, 1448, 6, 2]]
+    expected = ['The mitochondria is the powerhouse of the cell!']
     assert naive_bpe_medium_vocab.decode(text) == expected
 
     # Test case 2: paragraph
     with open(FILEPATHS['encode_integer_values'], 'r') as file:
-        text = json.load(file)
+        batch = json.load(file)
     
+    expected = []
     with open(FILEPATHS['encode_text'], 'r') as file:
-        expected = file.read()
+        for line in file.readlines():
+            expected.append(line.strip())
 
-    assert naive_bpe_medium_vocab.decode(text) == expected
+    assert naive_bpe_medium_vocab.decode(batch) == expected
 
 
 if __name__ == "__main__":
