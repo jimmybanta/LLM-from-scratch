@@ -1,5 +1,27 @@
 # Dev Journal
 
+#### Friday - 11/22/24
+
+#### Positional encoding
+I'll use sinusoidal positional encoding.
+
+This brings up a question - how to handle padding? 
+My original plan was to simply add the PE to all the embeddings, padding tokens included, then just mask out the padding tokens -- but I'm reading things that decoder-only LLMS should use left-padding, as opposed to right padding, as they use the final token to predict the next token, in the output layer.
+So, I need to do left padding - but then that brings up the question of how to do positional encoding? 
+Plan:
+- do left-padding, calculate the positional encoding, and shift them so they only apply to the non-padding tokens.
+
+Another question - what's the most efficient way to do this? These positional encoding values will be constant, so I could just save them to a file and load them when doing this, rather than calculating them every time.
+- Test this out, see what's faster
+- When it comes to training, this could make a difference
+- What kind of batch size will I be using for training?
+    - ultimately, batch size won't be super relevant for this - as the positional encoding will be the same for all sequences in the batch, so I can just calculate/load it one and use it over and over
+    - let's test out with embedding dimension of 512, and sequence length of 2048
+    - calculating them takes around 0.01 seconds
+    - loading them from file takes around 0.001 seconds - I'll use this
+    - Now that I think about it, I'll probably only need to do this once - then I'll just have them stored in memory as the model is training. so this is somewhat of a moot point
+
+
 #### Thursday - 11/21/24
 
 #### More word embeddings

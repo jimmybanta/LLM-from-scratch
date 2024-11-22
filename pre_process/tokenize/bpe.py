@@ -27,8 +27,9 @@ class BPETokenizer:
                     lookup_table_file=None,
                     corpus=None, 
                     vocab_size=1024,
-                    input_max_length=256,
-                    padding_token='<pad>'):
+                    context_size=256,
+                    padding_token='<pad>',
+                    ):
         '''
         Initialize the BPETokenizer.
         
@@ -45,7 +46,7 @@ class BPETokenizer:
             Note: the corpus should be a list of strings, not one big string.
         vocab_size : int | 1024
             The size of the vocabulary. Default is 1024.
-        input_max_length : int | 256
+        context_size : int | 256
             The maximum length of an input
             -- the same as the context window for our LLM.
         '''
@@ -71,7 +72,7 @@ class BPETokenizer:
             self.lookup_table = {}
 
         self.vocab_size = vocab_size
-        self.input_max_length = input_max_length
+        self.context_size = context_size
         self.padding_token = padding_token
 
 
@@ -547,12 +548,12 @@ class BPETokenizer:
                             break
 
             # we need to fill out the rest of the sentence with padding
-            while len(sentence_values) < self.input_max_length:
+            while len(sentence_values) < self.context_size:
 
                 if return_integers:
-                    sentence_values.append(self.lookup_table_search('<pad>'))
+                    sentence_values.insert(0, self.lookup_table_search('<pad>'))
                 else:
-                    sentence_values.append('<pad>')
+                    sentence_values.insert(0, '<pad>')
 
             values.append(sentence_values)
 
@@ -589,20 +590,23 @@ class BPETokenizer:
             decoded_text = ''
 
             # iterate through the token values
-            for token_value in sentence:
+            for token_value in sentence:                    
 
                 if integers:
                     decoded_token = self.vocab[token_value]
                 else:
                     decoded_token = token_value
 
+                # skip padding tokens
+                if decoded_token == self.padding_token:
+                    continue
+
                 if decoded_token in special:
                     decoded_text += special[decoded_token]
                 else:
                     decoded_text += decoded_token
                 
-                if decoded_token == '<endoftext>':
-                    break
+
             
             decoded_batch.append(decoded_text)
 
@@ -622,7 +626,7 @@ class NaiveBPETokenizer(BPETokenizer):
                  lookup_table_file=None,
                  corpus=None,
                  vocab_size=1024,
-                    input_max_length=256,
+                    context_size=256,
                     padding_token='<pad>'
                  ):
         '''
@@ -640,9 +644,8 @@ class NaiveBPETokenizer(BPETokenizer):
             The corpus used to train the tokenizer. Default is None.
         vocab_size : int | 1024
             The size of the vocabulary. Default is 1024.
-        input_max_length : int | 256
-            The maximum length of an input
-            -- the same as the context window for our LLM.
+        context_size : int | 256
+            The size of the context window, aka the maximum length of an input.
         padding_token : str | '<pad>'
             The token to use for padding. Default is '<pad>'.
         '''
@@ -652,7 +655,7 @@ class NaiveBPETokenizer(BPETokenizer):
                          lookup_table_file=lookup_table_file,
                          corpus=corpus, 
                          vocab_size=vocab_size,
-                         input_max_length=input_max_length,
+                         context_size=context_size,
                          padding_token=padding_token)
         
         # special characters

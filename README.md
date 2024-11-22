@@ -35,10 +35,10 @@ In an effort to gain a deep understanding of LLM's (and their underlying archite
       - [ ] optimize train loop?
       - [ ] optimize encoder?
     
-  - [x] Word Embedding
-    - [x] first - use gensim to train custom word embeddings
-    - [ ] later - train from scratch, using NN implementation developed for later on
-  - [ ] Positional Encoding
+  - [x] Word Embedding - using word2vec
+    - [x] first - use gensim to train custom word embeddings with word2vec
+    - [ ] later - train from scratch, using NN implementation that I'll develop later on
+  - [x] Positional Encoding - using sinusoidal PE
   
 - [ ] Attention
 

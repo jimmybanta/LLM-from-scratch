@@ -30,22 +30,22 @@ def test_save_and_load_binary(gensim_w2v):
     assert os.path.exists(model_file)
 
     # Load the model and check if it is loaded correctly
-    loaded_model = GensimWord2Vec(model_file=model_file)
+    loaded_model = GensimWord2Vec(model_file=model_file, size=50)
     assert loaded_model.model is not None
     assert loaded_model.model.vector_size == 50
 
     # Clean up
     os.remove(model_file)
 
-def test_save_and_load_full_model(gensim_w2v):
-    # Test saving and loading the full model
+def test_save_and_load_table(gensim_w2v):
+    # Test saving and loading the table
     gensim_w2v.train()
-    model_file = "test_model_full.bin"
-    gensim_w2v.save(model_file, file_type='binary')
+    model_file = "test_model.txt"
+    gensim_w2v.save(model_file, file_type='table')
     assert os.path.exists(model_file)
 
     # Load the model and check if it is loaded correctly
-    loaded_model = GensimWord2Vec(model_file=model_file)
+    loaded_model = GensimWord2Vec(model_file=model_file, size=50)
     assert loaded_model.model is not None
     assert loaded_model.model.vector_size == 50
 

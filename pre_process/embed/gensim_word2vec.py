@@ -60,6 +60,10 @@ class GensimWord2Vec:
                 self.load(model_file, file_type='table')
             
             # set the vector size
+
+            if self.model.vector_size != self.size:
+                raise ValueError(f'The size of the model ({self.model.vector_size}) does not match the size parameter ({self.size}).')
+
             self.size = self.model.vector_size
 
         
@@ -154,7 +158,7 @@ class GensimWord2Vec:
             
             # if the sentence is shorter than the context size, pad it
             while len(sentence_embeddings) < self.context_size:
-                sentence_embeddings.append(self.padding_embedding)
+                sentence_embeddings.insert(0, self.padding_embedding)
             
             batch_embeddings.append(sentence_embeddings)
 

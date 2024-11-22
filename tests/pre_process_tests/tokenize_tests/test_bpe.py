@@ -84,7 +84,7 @@ def naive_bpe_medium_vocab():
         vocab_file=FILEPATHS['medium_vocab'],
         lookup_table_file=FILEPATHS['medium_lookup_table'],
         vocab_size=5667,
-        input_max_length=100
+        context_size=100
     )
 
 
@@ -499,7 +499,7 @@ def test_encode(naive_bpe_medium_vocab):
     
     # Test case 1: simple sentence, encoded as integers
     text = ['The mitochondria is the powerhouse of the cell!']
-    expected = [[637, 4, 3488, 3680, 2711, 1942, 729, 4, 3015, 4, 5054, 4, 4011, 2735, 4, 3690, 4, 5054, 4, 1448, 6, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+    expected = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 637, 4, 3488, 3680, 2711, 1942, 729, 4, 3015, 4, 5054, 4, 4011, 2735, 4, 3690, 4, 5054, 4, 1448, 6, 2]]
     assert naive_bpe_medium_vocab.encode(text, return_integers=True) == expected
 
     # Test case 2: paragraph, encoded as integers
@@ -520,7 +520,7 @@ def test_encode(naive_bpe_medium_vocab):
                 'is', '<space>', 'the', '<space>', 'power', 'house', '<space>', 
                 'of', '<space>', 'the', '<space>', 'cell', '!', '<endoftext>']]
     while len(expected[0]) < 100:
-        expected[0].append('<pad>')
+        expected[0].insert(0, '<pad>')
     assert naive_bpe_medium_vocab.encode(text, return_integers=False) == expected
 
     # Test case 4: paragraph, encoded as tokens
