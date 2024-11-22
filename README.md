@@ -15,7 +15,7 @@ In an effort to gain a deep understanding of LLM's (and their underlying archite
 
 ### Transformer Implementation
 
-- [ ] Data Pre-Processing
+- [x] Data Pre-Processing
   
   
   
