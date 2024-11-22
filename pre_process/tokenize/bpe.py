@@ -22,7 +22,6 @@ class BPETokenizer:
     '''
     
     def __init__(self, 
-                    model_dir=None, 
                     vocab_file=None,
                     lookup_table_file=None,
                     corpus=None, 
@@ -35,12 +34,10 @@ class BPETokenizer:
         
         Parameters
         ----------
-        model_dir : str | None
-            The directory to save the model. Default is None.
         vocab_file : str | None
-            The file to read the vocabulary from. Default is None.
+            The file to load the vocabulary from. Default is None.
         lookup_table_file : str | None
-            The file to read the lookup table from. Default is None.
+            The file to load the lookup table from. Default is None.
         corpus : str | None
             The corpus used to train the tokenizer. Default is None.
             Note: the corpus should be a list of strings, not one big string.
@@ -51,23 +48,18 @@ class BPETokenizer:
             -- the same as the context window for our LLM.
         '''
 
-        # the directory to save the model (optional)
-        self.model_dir = model_dir
-        if model_dir:
-            Path(self.model_dir).mkdir(parents=True, exist_ok=True)
-
         # the corpus used to train the tokenizer
         self.corpus = corpus
 
-        # if a vocab file is given, then read in the vocab
+        # if a vocab file is given, then load in the vocab
         if vocab_file:
-            self.vocab = self.read_from_file(vocab_file)
+            self.vocab = self.load_from_file(vocab_file)
         else:
             self.vocab = []
 
-        # if a lookup table file is given, then read in the lookup table
+        # if a lookup table file is given, then load in the lookup table
         if lookup_table_file:
-            self.lookup_table = self.read_from_file(lookup_table_file)
+            self.lookup_table = self.load_from_file(lookup_table_file)
         else:
             self.lookup_table = {}
 
@@ -292,27 +284,27 @@ class BPETokenizer:
         # generate the lookup table
         self.generate_lookup_table()
         
-    def write_to_file(self, data, filename):
+    def save_to_file(self, data, filename):
         '''
-        Writes an object to a json file.
+        Saves an object to a json file.
 
         Parameters
         ----------
         filename : str
-            The filename to write to.
+            The filename to save to.
         '''
 
         with open(filename, 'w') as f:
             json.dump(data, f, indent=4)
     
-    def read_from_file(self, filename):
+    def load_from_file(self, filename):
         '''
-        Reads an object from a json file.
+        Loads an object from a json file.
 
         Parameters
         ----------
         filename : str
-            The filename to read from.
+            The filename to load from.
         '''
 
         with open(filename, 'r') as f:
@@ -320,14 +312,14 @@ class BPETokenizer:
 
         return data
     
-    def read_special_char_from_file(self, filename):
+    def load_special_char_from_file(self, filename):
         '''
-        Read the special characters from a json file.
+        Load the special characters from a json file.
 
         Parameters
         ----------
         filename : str
-            The filename to read the special characters from.
+            The filename to load the special characters from.
         '''
 
         with open(filename, 'r') as f:
@@ -470,7 +462,7 @@ class BPETokenizer:
 
         return current_dict['complete_token']
 
-    def encode(self, text: List[str], return_integers=True) -> List[List]:
+    def encode(self, text: List[str], return_integers=False) -> List[List]:
         '''
         Given a batch (list) of strings, encodes them using the vocabulary.
         Either encodes them as their integer values, or as the tokens themselves.
@@ -479,8 +471,8 @@ class BPETokenizer:
         ----------
         text : List[str]
             The text to encode.
-        return_integers : bool | True
-            Whether to return the tokens as integers. Default is True.
+        return_integers : bool | False
+            Whether to return the tokens as integers. Default is False.
 
         Returns
         -------
@@ -621,11 +613,10 @@ class NaiveBPETokenizer(BPETokenizer):
     '''
 
     def __init__(self, 
-                 model_dir=None,
-                 vocab_file=None,
-                 lookup_table_file=None,
-                 corpus=None,
-                 vocab_size=1024,
+                    vocab_file=None,
+                    lookup_table_file=None,
+                    corpus=None,
+                    vocab_size=1024,
                     context_size=256,
                     padding_token='<pad>'
                  ):
@@ -634,12 +625,10 @@ class NaiveBPETokenizer(BPETokenizer):
         
         Parameters
         ----------
-        model_dir : str | None
-            The directory to save the model. Default is None.
         vocab_file : str | None
-            The file to read the vocabulary from. Default is None.
+            The file to load the vocabulary from. Default is None.
         lookup_table_file : str | None
-            The file to read the lookup table from. Default is None.
+            The file to load the lookup table from. Default is None.
         corpus : list | None
             The corpus used to train the tokenizer. Default is None.
         vocab_size : int | 1024
@@ -650,8 +639,7 @@ class NaiveBPETokenizer(BPETokenizer):
             The token to use for padding. Default is '<pad>'.
         '''
 
-        super().__init__(model_dir=model_dir, 
-                         vocab_file=vocab_file, 
+        super().__init__(vocab_file=vocab_file, 
                          lookup_table_file=lookup_table_file,
                          corpus=corpus, 
                          vocab_size=vocab_size,
@@ -660,7 +648,7 @@ class NaiveBPETokenizer(BPETokenizer):
         
         # special characters
         special_char_filepath = os.path.join(os.getenv('HOME_DIR'), 'pre_process', 'tokenize', 'assets', 'naive_bpe_special_char.json')
-        self.special_characters = self.read_special_char_from_file(special_char_filepath)
+        self.special_characters = self.load_special_char_from_file(special_char_filepath)
 
 
     def pre_tokenize(self, input: List[str]) -> List[List[str]]:

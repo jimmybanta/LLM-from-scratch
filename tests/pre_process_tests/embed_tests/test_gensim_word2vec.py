@@ -25,32 +25,32 @@ def test_train(gensim_w2v):
 def test_save_and_load_binary(gensim_w2v):
     # Test saving and loading the model in binary format
     gensim_w2v.train()
-    model_file = "test_model.bin"
-    gensim_w2v.save(model_file, file_type='binary')
-    assert os.path.exists(model_file)
+    embeddings_file = "test_model.bin"
+    gensim_w2v.save(embeddings_file, file_type='binary')
+    assert os.path.exists(embeddings_file)
 
     # Load the model and check if it is loaded correctly
-    loaded_model = GensimWord2Vec(model_file=model_file, size=50)
+    loaded_model = GensimWord2Vec(embeddings_file=embeddings_file, size=50)
     assert loaded_model.model is not None
     assert loaded_model.model.vector_size == 50
 
     # Clean up
-    os.remove(model_file)
+    os.remove(embeddings_file)
 
 def test_save_and_load_table(gensim_w2v):
     # Test saving and loading the table
     gensim_w2v.train()
-    model_file = "test_model.txt"
-    gensim_w2v.save(model_file, file_type='table')
-    assert os.path.exists(model_file)
+    embeddings_file = "test_model.txt"
+    gensim_w2v.save(embeddings_file, file_type='table')
+    assert os.path.exists(embeddings_file)
 
     # Load the model and check if it is loaded correctly
-    loaded_model = GensimWord2Vec(model_file=model_file, size=50)
+    loaded_model = GensimWord2Vec(embeddings_file=embeddings_file, size=50)
     assert loaded_model.model is not None
     assert loaded_model.model.vector_size == 50
 
     # Clean up
-    os.remove(model_file)
+    os.remove(embeddings_file)
 
 def test_embed_batch(gensim_w2v, sample_tokenized_sentences):
     # Test embedding a batch of sentences

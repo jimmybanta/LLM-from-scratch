@@ -2,6 +2,10 @@
 
 #### Friday - 11/22/24
 
+#### Pre-processing
+I'll make a PreProcess object - that handles all pre-processing.
+So, when it comes time to train, I can simply create that object, use it to train on the dataset, and then use it to pre-process all text before passing it into the transformer.
+
 #### Positional encoding
 I'll use sinusoidal positional encoding.
 

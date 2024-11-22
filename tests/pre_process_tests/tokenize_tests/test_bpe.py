@@ -92,39 +92,23 @@ def test_bpe_init():
 
     # Test case 1: Initialize with default parameters
     bpe = BPETokenizer()
-    assert bpe.model_dir is None
     assert bpe.corpus is None
     assert bpe.vocab == []
     assert bpe.vocab_size == 1024
 
     # Test case 2: Initialize with custom parameters
-    model_dir = os.path.join(os.getenv('TESTS_DIR'), 'pre_process_tests', 'tokenize_tests', 'model_dirs', 'test_bpe_model_dir')
     corpus = ["This is a test corpus."]
     vocab_file = FILEPATHS['small_vocab']
-    bpe = BPETokenizer(model_dir=model_dir, corpus=corpus, vocab_file=vocab_file, vocab_size=500)
-    assert bpe.model_dir == model_dir
+    bpe = BPETokenizer(corpus=corpus, vocab_file=vocab_file, vocab_size=500)
     assert bpe.corpus == corpus
     assert bpe.vocab_size == 500
-    assert bpe.vocab == bpe.read_from_file(vocab_file)
-
-    # Clean up: Delete the model directory if it exists
-    if os.path.exists(model_dir):
-        os.rmdir(model_dir)
+    assert bpe.vocab == bpe.load_from_file(vocab_file)
 
     # Test case 3: Initialize with only vocab_file
     bpe = BPETokenizer(vocab_file=vocab_file)
-    assert bpe.vocab == bpe.read_from_file(vocab_file)
+    assert bpe.vocab == bpe.load_from_file(vocab_file)
 
-    # Test case 4: Initialize with only model_dir
-    bpe = BPETokenizer(model_dir=model_dir)
-    assert bpe.model_dir == model_dir
-    assert bpe.vocab == []
-
-    # Clean up: Delete the model directory if it exists
-    if os.path.exists(model_dir):
-        os.rmdir(model_dir)
-
-    # Test case 5: Initialize with only corpus
+    # Test case 4: Initialize with only corpus
     bpe = BPETokenizer(corpus=corpus)
     assert bpe.corpus == corpus
     assert bpe.vocab == []
@@ -133,47 +117,30 @@ def test_naive_bpe_init():
 
     # Test case 1: Initialize with default parameters
     bpe = NaiveBPETokenizer()
-    assert bpe.model_dir is None
     assert bpe.corpus is None
     assert bpe.vocab == []
     assert bpe.vocab_size == 1024
-    assert bpe.special_characters == bpe.read_special_char_from_file(FILEPATHS['naive_special_char'])
+    assert bpe.special_characters == bpe.load_special_char_from_file(FILEPATHS['naive_special_char'])
 
     # Test case 2: Initialize with custom parameters
-    model_dir = os.path.join(os.getenv('TESTS_DIR'), 'pre_process_tests', 'tokenize_tests', 'model_dirs', 'test_bpe_model_dir')
     corpus = ["This is a test corpus."]
     vocab_file = FILEPATHS['small_vocab']
-    bpe = NaiveBPETokenizer(model_dir=model_dir, corpus=corpus, vocab_file=vocab_file, vocab_size=500)
-    assert bpe.model_dir == model_dir
+    bpe = NaiveBPETokenizer(corpus=corpus, vocab_file=vocab_file, vocab_size=500)
     assert bpe.corpus == corpus
     assert bpe.vocab_size == 500
-    assert bpe.vocab == bpe.read_from_file(vocab_file)
-    assert bpe.special_characters == bpe.read_special_char_from_file(FILEPATHS['naive_special_char'])
-
-    # Clean up: Delete the model directory if it exists
-    if os.path.exists(model_dir):
-        os.rmdir(model_dir)
+    assert bpe.vocab == bpe.load_from_file(vocab_file)
+    assert bpe.special_characters == bpe.load_special_char_from_file(FILEPATHS['naive_special_char'])
 
     # Test case 3: Initialize with only vocab_file
     bpe = NaiveBPETokenizer(vocab_file=vocab_file)
-    assert bpe.vocab == bpe.read_from_file(vocab_file)
-    assert bpe.special_characters == bpe.read_special_char_from_file(FILEPATHS['naive_special_char'])
+    assert bpe.vocab == bpe.load_from_file(vocab_file)
+    assert bpe.special_characters == bpe.load_special_char_from_file(FILEPATHS['naive_special_char'])
 
-    # Test case 4: Initialize with only model_dir
-    bpe = NaiveBPETokenizer(model_dir=model_dir)
-    assert bpe.model_dir == model_dir
-    assert bpe.vocab == []
-    assert bpe.special_characters == bpe.read_special_char_from_file(FILEPATHS['naive_special_char'])
-
-    # Clean up: Delete the model directory if it exists
-    if os.path.exists(model_dir):
-        os.rmdir(model_dir)
-
-    # Test case 5: Initialize with only corpus
+    # Test case 4: Initialize with only corpus
     bpe = NaiveBPETokenizer(corpus=corpus)
     assert bpe.corpus == corpus
     assert bpe.vocab == []
-    assert bpe.special_characters == bpe.read_special_char_from_file(FILEPATHS['naive_special_char'])
+    assert bpe.special_characters == bpe.load_special_char_from_file(FILEPATHS['naive_special_char'])
 
 
 def test_normalize(bpe):
@@ -419,17 +386,17 @@ def test_generate_lookup_table(naive_bpe_tiny_vocab, naive_bpe_small_vocab, naiv
 
     # Test case 1: tiny vocab
     naive_bpe_tiny_vocab.generate_lookup_table()
-    expected = naive_bpe_tiny_vocab.read_from_file(FILEPATHS['tiny_lookup_table'])
+    expected = naive_bpe_tiny_vocab.load_from_file(FILEPATHS['tiny_lookup_table'])
     assert naive_bpe_tiny_vocab.lookup_table == expected
 
     # Test case 2: small vocab
     naive_bpe_small_vocab.generate_lookup_table()
-    expected = naive_bpe_small_vocab.read_from_file(FILEPATHS['small_lookup_table'])
+    expected = naive_bpe_small_vocab.load_from_file(FILEPATHS['small_lookup_table'])
     assert naive_bpe_small_vocab.lookup_table == expected
 
     # Test case 3: medium vocab
     naive_bpe_medium_vocab.generate_lookup_table()
-    expected = naive_bpe_medium_vocab.read_from_file(FILEPATHS['medium_lookup_table'])
+    expected = naive_bpe_medium_vocab.load_from_file(FILEPATHS['medium_lookup_table'])
     assert naive_bpe_medium_vocab.lookup_table == expected
 
 

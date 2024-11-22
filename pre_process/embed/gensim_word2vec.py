@@ -19,7 +19,7 @@ class GensimWord2Vec:
 
     def __init__(self, 
                  tokenized_sentences=None, 
-                 model_file=None,
+                 embeddings_file=None,
                  size=512, 
                  window=5, 
                  min_count=1, 
@@ -33,7 +33,7 @@ class GensimWord2Vec:
         ----------
         tokenized_sentences : list
             A list of sentences, where each sentence is a list of tokens.
-        model_file : str
+        embeddings_file : str
             The path to a file to load a pre-trained model/embeddings from.
         size : int
             The size of the word vectors.
@@ -53,11 +53,12 @@ class GensimWord2Vec:
         self.workers = workers
         self.context_size = context_size
 
-        if model_file:
-            if os.path.splitext(model_file)[1] == '.bin':
-                self.load(model_file, file_type='binary')
-            elif os.path.splitext(model_file)[1] == '.txt':
-                self.load(model_file, file_type='table')
+        # if given a file, load the model
+        if embeddings_file:
+            if os.path.splitext(embeddings_file)[1] == '.bin':
+                self.load(embeddings_file, file_type='binary')
+            elif os.path.splitext(embeddings_file)[1] == '.txt':
+                self.load(embeddings_file, file_type='table')
             
             # set the vector size
 
