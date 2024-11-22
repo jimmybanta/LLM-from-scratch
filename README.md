@@ -60,5 +60,8 @@ In an effort to gain a deep understanding of LLM's (and their underlying archite
 - text-data-info/ -- contains information about the datasets used (the full datasets aren't being uploaded to GitHub)
   - LimaRP.md - the small dataset used for testing
 
-- tokenize/ -- contains modules related to tokenization
-- embed/ -- contains modules related to word embedding
+- pre_process/ -- contains modules for pre-processing (tokenize, embed, encode_position)
+
+- dev_journal.md -- a development journal I'm keeping of the project
+
+- logging.conf -- logging configuration
