@@ -39,6 +39,7 @@ In an effort to gain a deep understanding of LLM's (and their underlying archite
     - [x] first - use gensim to train custom word embeddings with word2vec
     - [ ] later - train from scratch, using NN implementation that I'll develop later on
   - [x] Positional Encoding - using sinusoidal PE
+    - [ ] optimize?
   - [x] PreProcess - object that encompasses all pre-processing
   
 - [ ] Attention

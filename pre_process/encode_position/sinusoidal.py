@@ -106,7 +106,7 @@ class SinusoidalPE:
             raise TypeError('path must be a string.')
 
         return np.load(path)
-        
+
     def encode(self, batch_embeddings: np.ndarray) -> np.ndarray:
         '''
         Encode the positional information of the word embeddings.
@@ -125,27 +125,33 @@ class SinusoidalPE:
 
         if not isinstance(batch_embeddings, np.ndarray):
             raise TypeError('batch_embeddings must be a numpy array.')
+
+        # Find the first non-zero index for each sequence in the batch
+        # Returns array of shape (batch_size,)
+        first_indices = np.argmax(np.any(batch_embeddings != 0, axis=2), axis=1)
+
+        # Create a mask for non-padding positions
+        # Shape: (batch_size, context_size)
+        mask = np.arange(batch_embeddings.shape[1])[None, :] >= first_indices[:, None]
+
+        # Expand dimensions to match the embedding dimension
+        # Shape: (batch_size, context_size, 1)
+        mask = mask[..., None]
+
+        # Create position indices relative to the first token
+        # Shape: (batch_size, context_size)
+        positions = np.arange(batch_embeddings.shape[1])[None, :] - first_indices[:, None]
+        positions = np.clip(positions, 0, self.positional_encodings.shape[0] - 1)
+
+        # Get the positional encodings for each position
+        # Shape: (batch_size, context_size, d_embedding)
+        encodings = self.positional_encodings[positions]
+
+        # Apply mask to zero out encodings for padding tokens
+        encodings = encodings * mask
+
+        # Add positional encodings to the embeddings
+        return batch_embeddings + encodings            
+
+
         
-        encoded_batch_embeddings = []
-
-        for sequence in batch_embeddings:
-
-            # get the index of the first token in the sequence
-            first_idx = np.nonzero(sequence)[0][0]
-
-            # get the positional encodings for the non-padding tokens
-            encodings = self.positional_encodings[:sequence.shape[0] - first_idx]
-
-            # create the positional encodings for all tokens
-            ## add zero arrays for all padding tokens
-            ## this shifts the positional encodings so that they align with the positions of the tokens
-            full_encodings = np.concatenate((np.zeros((first_idx, self.d_embedding)), encodings))
-
-            # add the positional encodings to the sequence
-            encoded_batch_embeddings.append(sequence + full_encodings)
-
-        return np.array(encoded_batch_embeddings)
-        
-
-
-    

@@ -152,7 +152,7 @@ class GensimWord2Vec:
                         sentence_embeddings.append(self.padding_embedding)
                     else:
                         logger.info(f'Unknown token: {token}')
-                        sentence_embeddings.append(self.unknown_token)
+                        sentence_embeddings.append(self.unknown_embedding)
                 
                 else:
                     sentence_embeddings.append(self.model[token])

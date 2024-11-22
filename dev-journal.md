@@ -2,6 +2,14 @@
 
 #### Friday - 11/22/24
 
+#### positional encoding - optimize
+ran a quick test - it seems like, of all steps, positional encoding takes the longest by far -- at least 75% of the time goes towards it.
+If it can optimize it, it will speed up pre-processing significantly.
+
+Optimized:
+- made it so it didn't iterate, only used numpy vectorization - but it didn't make much of a difference.
+Oh well - I can come back and try to optimize more later.
+
 #### Pre-processing
 I'll make a PreProcess object - that handles all pre-processing.
 So, when it comes time to train, I can simply create that object, use it to train on the dataset, and then use it to pre-process all text before passing it into the transformer.
