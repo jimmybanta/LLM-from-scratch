@@ -1,6 +1,30 @@
 # Dev Journal
 
-#### Friday - 11/22/24
+### Fri - 12/13/24
+
+#### Attention - Single Head
+Now to implement the forward pass of an attention head.
+Each will need to know the d_model (the size of the word embeddings), the d_q/d_k/d_v (the size of our query, key, value vectors)
+
+Each attention head will have the following learned weights:
+- query - of size [d_model, d_q]
+- key - of size [d_model, d_k]
+- value - of size [d_model, d_v]
+
+As far as I'm aware, d_q, d_k, and d_v will all be the same size
+
+When an input flows in, it will be of size [batch_size, seq_len, d_model]
+We need to generate query, key, and value vectors from it - by matrix multiplying input @ w_q/w_k/w_v
+
+Then, we multiply query by a transposed key matrix:
+- query shape = [seq_len, d_k]
+- key transposed shape = [d_k, seq_len]
+- multiplied gives us [seq_len, seq_len] 
+- then, when it gets multiplied by value gives us [seq_len, d_k] - which is what we want
+
+
+
+### Friday - 11/22/24
 
 #### positional encoding - optimize
 ran a quick test - it seems like, of all steps, positional encoding takes the longest by far -- at least 75% of the time goes towards it.
@@ -34,7 +58,7 @@ Another question - what's the most efficient way to do this? These positional en
     - Now that I think about it, I'll probably only need to do this once - then I'll just have them stored in memory as the model is training. so this is somewhat of a moot point
 
 
-#### Thursday - 11/21/24
+### Thursday - 11/21/24
 
 #### More word embeddings
 So I think that encoding tokens as their integers will actually end up being unnecessary - I can encode them as their actual token values, and to convert them into their word embeddings, I'll have a dictionary that maps the token values to their embeddings - so there won't be a need for the token values.
