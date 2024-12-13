@@ -43,6 +43,10 @@ In an effort to gain a deep understanding of LLM's (and their underlying archite
   - [x] PreProcess - object that encompasses all pre-processing
   
 - [ ] Attention
+  - [x] Single Attention Head - forward pass
+
+- [ ] Utility functions
+  - [x] Softmax
 
 - [ ] Neural Network
 

@@ -22,6 +22,22 @@ Then, we multiply query by a transposed key matrix:
 - multiplied gives us [seq_len, seq_len] 
 - then, when it gets multiplied by value gives us [seq_len, d_k] - which is what we want
 
+Then, we divide the scores element-wise by the square root of d_k
+- this is what they did in the original paper - they say it's because, as d_k gets larger, the dot product produces bigger and bigger values - which pushes softmax into 'regions where it has extremely small gradients'
+    - what does this mean, exactly? - I'm interpreting it to mean that, because softmax involves exponentials, the larger values will dominate more and more, the larger the values in general are
+    - thus, we would lose some nuance, in a sense, as the softmax outputs would be largely dominated by a small number of values
+
+
+Then, we take the softmax of these scores, along each input token
+    - so each input token ends up with a vector, of length seq_len - thus giving an attention score for each other token in the sequence
+
+Then, we multiply these attention scores by the value vectors - giving us output of size [seq_len, d_v] - which is what we want - these are the values
+
+#### Softmax 
+Implementing the softmax function - 
+- Using shifting (shift all values by the max value) - to avoid having to use such large numbers
+- for a while I wasn't able to get the softmax scores to add up to exactly 1 - I looked at the scipy code for their softmax function, and they used keepdims argument in their np functions - and that made the difference
+
 
 
 ### Friday - 11/22/24
