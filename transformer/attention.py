@@ -107,3 +107,58 @@ class AttentionHead:
         return values
     
 
+class MultiHeadAttention:
+    '''
+    An attention layer with multiple attention heads.
+    '''
+
+    def __init__(self, d_model, seq_len, 
+                 num_heads=8,
+                 w_o=None):
+        '''
+        Initializes the layer.
+
+        Parameters
+        ----------
+        d_model: int
+            The size of word embeddings of the model
+        seq_len: int
+            The length of input sequences
+        num_heads: int, optional
+            The number of attention heads to use.
+        w_o: array, optional
+            The projection matrix, of shape 
+        '''
+
+        self.d_k = d_model // num_heads
+        self.d_v = d_model // num_heads
+
+        # instantiate the attention heads
+        self.heads = [AttentionHead(d_model, self.d_k, self.d_v, seq_len) for _ in range(num_heads)]
+
+        self.w_o = np.random.randn(num_heads * self.d_v, d_model) if not w_o else w_o
+
+
+    def forward(self, x):
+        '''
+        Forward pass through the attention layer.
+
+        Parameters
+        ----------
+        x: array
+            Input array - of shape (batch_size, seq_len, d_model)
+
+        Returns 
+        -------
+        values: array
+            Array of calculated values - of shape (batch_size, seq_len, d_v)
+        '''
+
+        # get the outputs from each head
+        outputs = [head.forward(x) for head in self.heads]
+
+        # concatenate the outputs to form one array
+        stacked_output = np.concatenate(outputs, axis=2)
+
+        # multiply the outputs by the projection matrix to get the output of the layer
+        return stacked_output @ self.w_o

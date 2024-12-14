@@ -47,13 +47,12 @@ In an effort to gain a deep understanding of LLM's (and their underlying archite
   - [ ] Masked self-attention
     - [x] look-ahead mask
     - [ ] padding mask
-  - [ ] Multi-headed attention
-  - 
+  - [x] Multi-head attention
+
+- [ ] Neural Network
 
 - [ ] Utility functions
   - [x] Softmax
-
-- [ ] Neural Network
 
 - [ ] Normalization
 

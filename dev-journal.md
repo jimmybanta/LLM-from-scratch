@@ -49,7 +49,9 @@ This brings up a problem - as we have left padding, we'll have early sequences t
 
 
 #### Multi-headed attention
-Now I need to figure out how to combine multiple attention heads into one attention layer
+Now I need to figure out how to combine multiple attention heads into one attention layer.
+- I'll concatenate the final outputs from each head, and then multiply this combined array by a learned projection matrix
+- This is what they did in the paper
 
 
 ### Friday - 11/22/24
