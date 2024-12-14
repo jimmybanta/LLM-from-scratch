@@ -546,8 +546,13 @@ class BPETokenizer:
                     sentence_values.insert(0, self.lookup_table_search('<pad>'))
                 else:
                     sentence_values.insert(0, '<pad>')
+            
+            if len(sentence_values) > self.context_size:
+                raise ValueError(f'The following sentence, when tokenized, is longer than the context length: {sentence}')
 
             values.append(sentence_values)
+        
+            
 
         return values
 

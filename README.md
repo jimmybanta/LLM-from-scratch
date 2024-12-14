@@ -44,6 +44,11 @@ In an effort to gain a deep understanding of LLM's (and their underlying archite
   
 - [ ] Attention
   - [x] Single Attention Head - forward pass
+  - [ ] Masked self-attention
+    - [x] look-ahead mask
+    - [ ] padding mask
+  - [ ] Multi-headed attention
+  - 
 
 - [ ] Utility functions
   - [x] Softmax

@@ -7,7 +7,7 @@ class AttentionHead:
     A single attention head.
     '''
 
-    def __init__(self, d_model, d_k, d_v, 
+    def __init__(self, d_model, d_k, d_v, seq_len,
                     w_q=None, w_k=None, w_v=None):
         '''
         Initializes the attention head.
@@ -20,6 +20,8 @@ class AttentionHead:
             The size of query and key vectors
         d_v: int
             The size of value vectors
+        seq_len: int
+            The length of input sequences
         w_q: array, optional
             The query weights, of shape (d_model, d_k)
         w_k: array, optional
@@ -38,6 +40,12 @@ class AttentionHead:
         self.w_k = np.random.randn(d_model, d_k) if not w_k else w_k
         # value weights, of shape (d_model, d_k)
         self.w_v = np.random.randn(d_model, d_v) if not w_v else w_v
+
+        # generate the mask - that masks out later tokens
+        ## returns True whenever a token is after the current token
+        mesh = np.meshgrid(np.arange(seq_len), np.arange(seq_len))
+        self.position_mask = (mesh[1] < mesh[0])
+        
         
 
     def forward(self, x):
@@ -65,6 +73,31 @@ class AttentionHead:
         scores = query @ key.transpose(0, 2, 1)
         # divide element-wise by square root of d_k
         scores /= np.sqrt(self.d_k)
+
+        # mask out future values and padding tokens
+        ## expand the position mask to the batch size
+        batch_size = x.shape[0]
+        position_mask = np.repeat(np.expand_dims(self.position_mask, 0), batch_size, axis=0)
+
+        # TO DO - figure out padding mask
+        """ # generate the padding mask
+        ## find where the embeddings are equal to zero
+        ## these are the padding tokens
+        padding_mask = np.all(x == 0, axis=2)
+
+        print(padding_mask.repeat(repeats=x.shape[1], axis=1).shape)
+
+        #print(padding_mask.reshape((batch_size, x.shape[1], x.shape[1])).shape)
+
+        #print(padding_mask[:, :, np.newaxis].repeat(x.shape[1], axis=2))
+
+        #print(np.repeat(padding_mask, repeats=x.shape[1], axis=1).shape)
+
+        scores[padding_mask] = -np.inf """
+
+        # mask out the values
+        scores[position_mask] = -np.inf
+
         # take softmax of these attention scores
         scores = softmax(scores, axis=2)
 
@@ -73,20 +106,4 @@ class AttentionHead:
 
         return values
     
-
-if __name__ == '__main__':
-
-    batch_size = 32
-    seq_len = 2048
-    d_model = 512
-
-
-    i = np.random.randn(batch_size, seq_len, d_model)
-
-    head = AttentionHead(d_model, 64, 64)
-
-    temp = head.forward(i)
-
-
-
 

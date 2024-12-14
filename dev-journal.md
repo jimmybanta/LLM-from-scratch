@@ -16,7 +16,7 @@ As far as I'm aware, d_q, d_k, and d_v will all be the same size
 When an input flows in, it will be of size [batch_size, seq_len, d_model]
 We need to generate query, key, and value vectors from it - by matrix multiplying input @ w_q/w_k/w_v
 
-Then, we multiply query by a transposed key matrix:
+Then, we multiply query by a transposed key matrix: 
 - query shape = [seq_len, d_k]
 - key transposed shape = [d_k, seq_len]
 - multiplied gives us [seq_len, seq_len] 
@@ -38,6 +38,18 @@ Implementing the softmax function -
 - Using shifting (shift all values by the max value) - to avoid having to use such large numbers
 - for a while I wasn't able to get the softmax scores to add up to exactly 1 - I looked at the scipy code for their softmax function, and they used keepdims argument in their np functions - and that made the difference
 
+#### Masked self-attention
+I need to implement the mask, so that tokens never attend to tokens that come after them in the sequence.
+
+That brings up another questin - how will this handle padding tokens? 
+- Padding embeddings will be 0, so they'll remain 0 in the dot product calculation - but then they'll affect the softmax calculation - so we need to mask them out in the same way as the position mask
+
+This brings up a problem - as we have left padding, we'll have early sequences that get everything masked out - so softmax won't work, as every value will be negative infinity.
+
+
+
+#### Multi-headed attention
+Now I need to figure out how to combine multiple attention heads into one attention layer
 
 
 ### Friday - 11/22/24

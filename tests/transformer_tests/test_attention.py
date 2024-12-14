@@ -8,7 +8,8 @@ def attention_head():
     d_model = 512
     d_k = 64
     d_v = 64
-    return AttentionHead(d_model, d_k, d_v)
+    seq_len = 10
+    return AttentionHead(d_model, d_k, d_v, seq_len)
 
 def test_initialization(attention_head):
     # Test if the AttentionHead is initialized correctly
@@ -16,6 +17,7 @@ def test_initialization(attention_head):
     assert attention_head.w_q.shape == (512, 64)
     assert attention_head.w_k.shape == (512, 64)
     assert attention_head.w_v.shape == (512, 64)
+    assert attention_head.mask.shape == (10, 10)
 
 def test_forward(attention_head):
     # Test the forward method
