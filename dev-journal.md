@@ -10,6 +10,8 @@ given dimensions
 
 Then, I need to implement ReLU
 
+Then, I'll combine them into a 2-layer MLP
+
 ### Fri - 12/13/24
 
 #### Attention - Single Head

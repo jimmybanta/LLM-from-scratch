@@ -31,7 +31,7 @@ In an effort to gain a deep understanding of LLM's (and their underlying archite
     - [x] encoder
     - [x] decoder
     - [ ] later
-      - [ ]  train a byte-level BPE tokenizer?
+      - [ ] train a byte-level BPE tokenizer?
       - [ ] optimize train loop?
       - [ ] optimize encoder?
     
@@ -49,18 +49,26 @@ In an effort to gain a deep understanding of LLM's (and their underlying archite
     - [ ] padding mask
   - [x] Multi-head attention
 
-- [ ] Neural Network
+- [x] MLP
   - [x] Linear layer
-  - [ ] Combine linear + activation functions for an MLP
+  - [x] Combine linear + ReLU for a 2 layer MLP
 
 - [ ] Utility functions
   - [x] Softmax
   - [x] ReLU
   - [ ] LayerNorm
 
-- [ ] Residual Connections
+- [ ] Transformer Block
+  - [ ] Attention
+  - [x] MLP
+  - [ ] Residual Connection
+  - [ ] LayerNorm
 
-- [ ] Output layer
+- [ ] Full Model
+  - [ ] Pre-processing
+  - [ ] Transformer Blocks
+  - [ ] Unembedding
+  - [ ] Sampling
 
 
 
