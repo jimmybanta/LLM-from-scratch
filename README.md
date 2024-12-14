@@ -51,12 +51,12 @@ In an effort to gain a deep understanding of LLM's (and their underlying archite
 
 - [ ] Neural Network
   - [x] Linear layer
+  - [ ] Combine linear + activation functions for an MLP
 
 - [ ] Utility functions
   - [x] Softmax
-  - [ ] ReLU
-
-- [ ] Normalization
+  - [x] ReLU
+  - [ ] LayerNorm
 
 - [ ] Residual Connections
 

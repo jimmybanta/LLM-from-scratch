@@ -8,6 +8,7 @@ Need to create an MLP
 First, create a simple linear layer - that takes in an input, calculates the linear transformation,
 given dimensions
 
+Then, I need to implement ReLU
 
 ### Fri - 12/13/24
 

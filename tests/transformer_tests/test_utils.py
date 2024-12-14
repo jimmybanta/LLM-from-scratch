@@ -1,6 +1,6 @@
 import pytest
 import numpy as np
-from transformer.utils import softmax
+from transformer.utils import softmax, relu
 
 def test_softmax():
     # Test case 1: Simple 1D array
@@ -35,6 +35,15 @@ def test_softmax():
     result = softmax(x, axis=2)
     np.testing.assert_almost_equal(result, expected, decimal=6)
     assert np.sum(result, axis=2).all() == 1
+
+def test_relu():
+    x = np.random.randn(32, 20, 48)
+
+    x = relu(x)
+
+    assert np.all(x >= 0)
+
+    
 
 if __name__ == '__main__':
     pytest.main()
