@@ -50,9 +50,11 @@ In an effort to gain a deep understanding of LLM's (and their underlying archite
   - [x] Multi-head attention
 
 - [ ] Neural Network
+  - [x] Linear layer
 
 - [ ] Utility functions
   - [x] Softmax
+  - [ ] ReLU
 
 - [ ] Normalization
 

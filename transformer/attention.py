@@ -127,7 +127,7 @@ class MultiHeadAttention:
         num_heads: int, optional
             The number of attention heads to use.
         w_o: array, optional
-            The projection matrix, of shape 
+            The output matrix, of shape 
         '''
 
         self.d_k = d_model // num_heads
@@ -160,5 +160,5 @@ class MultiHeadAttention:
         # concatenate the outputs to form one array
         stacked_output = np.concatenate(outputs, axis=2)
 
-        # multiply the outputs by the projection matrix to get the output of the layer
+        # multiply the outputs by the output matrix to get the output of the layer
         return stacked_output @ self.w_o

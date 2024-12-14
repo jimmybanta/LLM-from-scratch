@@ -1,5 +1,14 @@
 # Dev Journal
 
+### Saturday - 12/14/23
+Currently on a flight to Singapore so not sure what day it actually is - but I'll call it Saturday.
+
+#### MLP
+Need to create an MLP
+First, create a simple linear layer - that takes in an input, calculates the linear transformation,
+given dimensions
+
+
 ### Fri - 12/13/24
 
 #### Attention - Single Head
