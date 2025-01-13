@@ -74,32 +74,27 @@ class AttentionHead:
         # divide element-wise by square root of d_k
         scores /= np.sqrt(self.d_k)
 
-        # mask out future values and padding tokens
+        # masks
         ## expand the position mask to the batch size
         batch_size = x.shape[0]
         position_mask = np.repeat(np.expand_dims(self.position_mask, 0), batch_size, axis=0)
 
-        # TO DO - figure out padding mask
-        """ # generate the padding mask
-        ## find where the embeddings are equal to zero
-        ## these are the padding tokens
+        ## generate the padding mask
+        ### find where the embeddings are equal to zero
+        ### these are the padding tokens
         padding_mask = np.all(x == 0, axis=2)
-
-        print(padding_mask.repeat(repeats=x.shape[1], axis=1).shape)
-
-        #print(padding_mask.reshape((batch_size, x.shape[1], x.shape[1])).shape)
-
-        #print(padding_mask[:, :, np.newaxis].repeat(x.shape[1], axis=2))
-
-        #print(np.repeat(padding_mask, repeats=x.shape[1], axis=1).shape)
-
-        scores[padding_mask] = -np.inf """
+        ### expand the padding mask
+        padding_mask = np.repeat(padding_mask[:, None, :], padding_mask.shape[1], axis=1)
 
         # mask out the values
+        scores[padding_mask] = -np.inf
         scores[position_mask] = -np.inf
 
         # take softmax of these attention scores
         scores = softmax(scores, axis=2)
+
+        # replace nan with 0 - for the padding tokens
+        scores = np.nan_to_num(scores, nan=0.0)
 
         # multiply by value vectors
         values = scores @ value

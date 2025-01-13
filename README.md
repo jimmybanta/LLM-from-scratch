@@ -42,11 +42,11 @@ In an effort to gain a deep understanding of LLM's (and their underlying archite
     - [ ] optimize?
   - [x] PreProcess - object that encompasses all pre-processing
   
-- [ ] Attention
+- [x] Attention
   - [x] Single Attention Head - forward pass
   - [ ] Masked self-attention
     - [x] look-ahead mask
-    - [ ] padding mask
+    - [x] padding mask
   - [x] Multi-head attention
 
 - [x] MLP
@@ -59,10 +59,10 @@ In an effort to gain a deep understanding of LLM's (and their underlying archite
   - [x] LayerNorm
 
 - [ ] Transformer Block
-  - [ ] Attention
+  - [x] Attention
   - [x] MLP
   - [ ] Residual Connection
-  - [ ] LayerNorm
+  - [x] LayerNorm
 
 - [ ] Full Model
   - [ ] Pre-processing

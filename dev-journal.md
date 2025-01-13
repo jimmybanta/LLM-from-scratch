@@ -12,6 +12,15 @@ I need to figure out over what dimensions to calculate the mean and variance - I
 
 Also - in Pytorch's docs, they have these gamma and beta parameters - they seem to allow the model to learn certain weights for scaling & shifting the normalized values. I'll include these too.
 
+#### Padding Mask
+I need to have a padding mask, so that tokens don't attend to padding tokens.
+So, I'll get the positions of the padding tokens, and then set the attention scores for those tokens to negative infinity - so that when they're softmaxed, they become 0.
+
+This presents one wrinkle - when we combine the padding mask with the position mask (that masks out future values) for the padding tokens themselves, they won't attend to anything - anything after will be masked out, anything before will be more padding tokens, so also masked out.
+So, softmax will return nan because we're passing in all -inf values.
+I think I'll handle this by taking the nan values from softmax and replace them with 0. 
+
+
 ### Saturday - 12/14/24
 Currently on a flight to Singapore so not sure what day it actually is - but I'll call it Saturday.
 
