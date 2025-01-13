@@ -53,10 +53,10 @@ In an effort to gain a deep understanding of LLM's (and their underlying archite
   - [x] Linear layer
   - [x] Combine linear + ReLU for a 2 layer MLP
 
-- [ ] Utility functions
+- [x] Utility functions
   - [x] Softmax
   - [x] ReLU
-  - [ ] LayerNorm
+  - [x] LayerNorm
 
 - [ ] Transformer Block
   - [ ] Attention
@@ -70,6 +70,7 @@ In an effort to gain a deep understanding of LLM's (and their underlying archite
   - [ ] Unembedding
   - [ ] Sampling
 
+- [ ] Training
 
 
 ## Directories & Files

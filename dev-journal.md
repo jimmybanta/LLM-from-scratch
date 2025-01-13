@@ -1,10 +1,22 @@
 # Dev Journal
 
-### Saturday - 12/14/23
+### Monday - 1/13/25
+Getting back to work on this.
+
+Today - I need to figure out the padding mask, and implement LayerNorm.
+Then, complete my implementation of the Transformer Block.
+
+#### LayerNorm
+I need to figure out over what dimensions to calculate the mean and variance - I obviously do it for each sentence in the batch, so that there's no spillover between examples in the batch. But do I do it by token, or do I do it over all the tokens?
+    - I feel like I shouldn't do it over all the tokens, as there are padding tokens, and these will give mean/variance of 0, which will throw everything off
+
+Also - in Pytorch's docs, they have these gamma and beta parameters - they seem to allow the model to learn certain weights for scaling & shifting the normalized values. I'll include these too.
+
+### Saturday - 12/14/24
 Currently on a flight to Singapore so not sure what day it actually is - but I'll call it Saturday.
 
 #### MLP
-Need to create an MLP
+Need to create an MLP 
 First, create a simple linear layer - that takes in an input, calculates the linear transformation,
 given dimensions
 

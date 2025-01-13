@@ -127,7 +127,7 @@ class MultiHeadAttention:
         num_heads: int, optional
             The number of attention heads to use.
         w_o: array, optional
-            The output matrix, of shape 
+            The output matrix, of shape (d_model, d_model)
         '''
 
         self.d_k = d_model // num_heads
@@ -136,7 +136,7 @@ class MultiHeadAttention:
         # instantiate the attention heads
         self.heads = [AttentionHead(d_model, self.d_k, self.d_v, seq_len) for _ in range(num_heads)]
 
-        self.w_o = np.random.randn(num_heads * self.d_v, d_model) if not w_o else w_o
+        self.w_o = np.random.randn(d_model, d_model) if not w_o else w_o
 
 
     def forward(self, x):
@@ -151,7 +151,7 @@ class MultiHeadAttention:
         Returns 
         -------
         values: array
-            Array of calculated values - of shape (batch_size, seq_len, d_v)
+            Array of calculated values - of shape (batch_size, seq_len, d_model)
         '''
 
         # get the outputs from each head
