@@ -7,7 +7,11 @@ class LayerNorm:
     Layer Normalization layer.
     '''
 
-    def __init__(self, d_model, eps=1e-5, scale_shift=True):
+    def __init__(self, d_model, 
+                 eps=1e-5, 
+                 scale_shift=True,
+                 gamma=None,
+                 beta=None):
         '''
         Initializes the layer.
 
@@ -19,12 +23,22 @@ class LayerNorm:
             A small value to avoid division by zero
         scale_shift: bool, optional
             Whether to scale and shift the normalized input
+        gamma: array, optional
+            The gamma parameter, of shape (d_model,)
+        beta: array, optional
+            The beta parameter, of shape (d_model,)
         '''
 
+        # if scale_shift is True, then we need to initialize gamma and beta
         if scale_shift:
 
-            self.gamma = np.ones(d_model)
-            self.beta = np.zeros(d_model)
+            # if gamma and beta are not provided, initialize them
+            if gamma and beta:
+                self.gamma = gamma
+                self.beta = beta
+            else:
+                self.gamma = np.ones(d_model)
+                self.beta = np.zeros(d_model)
         else:
             self.gamma = None
             self.beta = None

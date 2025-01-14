@@ -44,7 +44,7 @@ In an effort to gain a deep understanding of LLM's (and their underlying archite
   
 - [x] Attention
   - [x] Single Attention Head - forward pass
-  - [ ] Masked self-attention
+  - [x] Masked self-attention
     - [x] look-ahead mask
     - [x] padding mask
   - [x] Multi-head attention
@@ -58,15 +58,15 @@ In an effort to gain a deep understanding of LLM's (and their underlying archite
   - [x] ReLU
   - [x] LayerNorm
 
-- [ ] Transformer Block
+- [x] Transformer Block
   - [x] Attention
   - [x] MLP
-  - [ ] Residual Connection
+  - [x] Residual Connection
   - [x] LayerNorm
 
 - [ ] Full Model
-  - [ ] Pre-processing
-  - [ ] Transformer Blocks
+  - [x] Pre-processing
+  - [x] Transformer Blocks
   - [ ] Unembedding
   - [ ] Sampling
 

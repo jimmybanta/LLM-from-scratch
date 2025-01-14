@@ -1,5 +1,21 @@
 # Dev Journal
 
+### Tuesday - 1/14/25
+
+#### Transformer Block
+Putting it all together! So the inputs will flow in, and go through multi-headed attention. Then, we'll add that output to the residual stream, and normalize. Then, run that through the feedforward, then add that to the residual stream, and normalize.
+Then that's our output.
+
+One wrinkle - padding tokens don't get preserved - as it is now, the padding token values of all 0's don't get preserved as they flow through. This is because of the bias values in the feedforward layer - they get added, making the padding tokens non-zero.
+I need to fix this. 
+
+The most efficient way would probably be to stop the padding tokens from going through the feedforward layer in the first place - no need for all that computation, we know what we want as the output.
+
+So maybe I'll try chopping off the padding tokens, and only running the 'real' tokens through the feedforward - then reattaching after.
+- Ok - I don't know if this will work, because in a batch, the padding tokens will be different for each example - so I think I need to leave them in, to run them through the feedforward layer all at once - otherwise I'd have to split them up and run seperately, which would be more inefficient than running them through, with the padding tokens (I think).
+- So, I'll run everything through, and zero out the padding tokens after they've gone through.
+- This way, the padding tokens will remain 0 after going through a transformer block.
+
 ### Monday - 1/13/25
 Getting back to work on this.
 

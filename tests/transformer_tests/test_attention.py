@@ -24,7 +24,6 @@ def test_head_initialization(attention_head):
     assert attention_head.w_q.shape == (512, 64)
     assert attention_head.w_k.shape == (512, 64)
     assert attention_head.w_v.shape == (512, 64)
-    assert attention_head.position_mask.shape == (10, 10)
 
 def test_multi_initialization(multi_head_attention):
     # Test if the MultiHeadAttention is initialized correctly

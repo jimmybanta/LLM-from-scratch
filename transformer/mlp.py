@@ -66,7 +66,8 @@ class Linear:
 
 class TwoLayerMLP:
     '''
-    A Two-Layer Multi-Layer perceptron, with a ReLU in between.
+    A Two-Layer Multi-Layer perceptron, 
+    with a ReLU in between, that returns the same size as the input.
     '''
 
     def __init__(self, 
@@ -78,6 +79,19 @@ class TwoLayerMLP:
                  ):
         '''
         Initialize the MLP.
+
+        Parameters
+        ----------
+        input_dim: int, optional
+            The size of the input layer
+        hidden_dim: int, optional
+            The size of the hidden layer
+        bias: bool, optional
+            Whether to include bias in the linear layers
+        layers_w: list, optional
+            List of weights for the linear layers, of shape [(input_dim, hidden_dim), (hidden_dim, input_dim)]
+        layers_b: list, optional
+            List of biases for the linear layers, of shape [(hidden_dim,), (input_dim,)]
         '''
 
         self.layer_one = Linear(in_features=input_dim,
@@ -97,7 +111,6 @@ class TwoLayerMLP:
         '''
         Runs an input through the MLP.
         '''
-
         
         x = self.layer_one.forward(x)
         x = relu(x)

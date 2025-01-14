@@ -144,25 +144,13 @@ class PreProcessor:
         '''
 
         # tokenize the batch
-        tokenize_start = pc()
         tokenized_batch = self.tokenizer.encode(batch, return_integers=False)
-        tokenize_end = pc()
-        print('tokenized')
-        print(tokenize_end - tokenize_start)
 
         # embed the batch
-        embed_start = pc()
         embedded_batch = self.word_embedder.embed_batch(tokenized_batch)
-        embed_end = pc()
-        print('embedded')
-        print(embed_end - embed_start)
 
         # encode the positional information
-        encode_start = pc()
         encoded_batch = self.pe.encode(embedded_batch)
-        encode_end = pc()
-        print('encoded')
-        print(encode_end - encode_start)
 
         return encoded_batch
         

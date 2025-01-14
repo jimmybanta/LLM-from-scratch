@@ -41,14 +41,17 @@ class AttentionHead:
         # value weights, of shape (d_model, d_k)
         self.w_v = np.random.randn(d_model, d_v) if not w_v else w_v
 
-        # generate the mask - that masks out later tokens
-        ## returns True whenever a token is after the current token
-        mesh = np.meshgrid(np.arange(seq_len), np.arange(seq_len))
-        self.position_mask = (mesh[1] < mesh[0])
+        """ if position_mask:
+            self.position_mask = position_mask
+        else:
+            # generate the mask - that masks out later tokens
+            ## returns True whenever a token is after the current token
+            mesh = np.meshgrid(np.arange(seq_len), np.arange(seq_len))
+            self.position_mask = (mesh[1] < mesh[0]) """
         
         
 
-    def forward(self, x):
+    def forward(self, x, attention_mask=None):
         '''
         Forward pass through the attention head.
 
@@ -56,6 +59,8 @@ class AttentionHead:
         ----------
         x: array
             Input array - of shape (batch_size, seq_len, d_model)
+        attention_mask: array, optional
+            Attention mask to apply to the attention scores
 
         Returns 
         -------
@@ -74,7 +79,12 @@ class AttentionHead:
         # divide element-wise by square root of d_k
         scores /= np.sqrt(self.d_k)
 
-        # masks
+        # apply the attention mask, if provided
+        if attention_mask is not None:
+            scores[attention_mask] = -np.inf
+
+
+        """ 
         ## expand the position mask to the batch size
         batch_size = x.shape[0]
         position_mask = np.repeat(np.expand_dims(self.position_mask, 0), batch_size, axis=0)
@@ -88,7 +98,8 @@ class AttentionHead:
 
         # mask out the values
         scores[padding_mask] = -np.inf
-        scores[position_mask] = -np.inf
+        scores[position_mask] = -np.inf 
+        """
 
         # take softmax of these attention scores
         scores = softmax(scores, axis=2)
@@ -109,6 +120,9 @@ class MultiHeadAttention:
 
     def __init__(self, d_model, seq_len, 
                  num_heads=8,
+                 w_q=None, 
+                 w_k=None, 
+                 w_v=None,
                  w_o=None):
         '''
         Initializes the layer.
@@ -121,6 +135,12 @@ class MultiHeadAttention:
             The length of input sequences
         num_heads: int, optional
             The number of attention heads to use.
+        w_q: array, optional
+            The query matrix, of shape (num_heads, d_model, d_model // num_heads)
+        w_k: array, optional
+            The key matrix, of shape (num_heads, d_model, d_model // num_heads)
+        w_v: array, optional
+            The value matrix, of shape (num_heads, d_model, d_model // num_heads)
         w_o: array, optional
             The output matrix, of shape (d_model, d_model)
         '''
@@ -129,12 +149,15 @@ class MultiHeadAttention:
         self.d_v = d_model // num_heads
 
         # instantiate the attention heads
-        self.heads = [AttentionHead(d_model, self.d_k, self.d_v, seq_len) for _ in range(num_heads)]
+        if w_q and w_k and w_v:
+            self.heads = [AttentionHead(d_model, self.d_k, self.d_v, seq_len, w_q=w_q[i], w_k=w_k[i], w_v=w_v[i]) for i in range(num_heads)]
+        else:
+            self.heads = [AttentionHead(d_model, self.d_k, self.d_v, seq_len) for _ in range(num_heads)]
 
         self.w_o = np.random.randn(d_model, d_model) if not w_o else w_o
 
 
-    def forward(self, x):
+    def forward(self, x, attention_mask=None):
         '''
         Forward pass through the attention layer.
 
@@ -142,6 +165,8 @@ class MultiHeadAttention:
         ----------
         x: array
             Input array - of shape (batch_size, seq_len, d_model)
+        attention_mask: array, optional
+            Attention mask to apply to the attention scores
 
         Returns 
         -------
@@ -150,7 +175,7 @@ class MultiHeadAttention:
         '''
 
         # get the outputs from each head
-        outputs = [head.forward(x) for head in self.heads]
+        outputs = [head.forward(x, attention_mask=attention_mask) for head in self.heads]
 
         # concatenate the outputs to form one array
         stacked_output = np.concatenate(outputs, axis=2)
