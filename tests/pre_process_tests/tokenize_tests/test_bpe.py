@@ -210,7 +210,7 @@ def test_naive_pre_tokenize(naive_bpe):
     # Test case 7: complex sentence
     text = ['''     
          This is a sample text.. \n\t\n 
-            I want to includ0e special characters like !@#$%^&*()_+{}|:"<>?[]\;',./`~ and numbers like 1234567890. 
+            I want to includ0e special characters like !@#$%^&*()_+{}|:"<>?[]\\;',./`~ and numbers like 1234567890. 
 to make sure they're all pre-tokenized correctly.
 
         bla bla bla 10$10
@@ -232,7 +232,7 @@ to make sure they're all pre-tokenized correctly.
     # Test case 8: batch of sentences
     text = [
         'This is a sample text.. \n\t\n',
-        "I want to includ0e special characters like !@#$%^&*()_+{}|:\"<>?[]\;',./`~ and numbers like 1234567890. to make sure they\'re all pre-tokenized correctly.",
+        "I want to includ0e special characters like !@#$%^&*()_+{}|:\"<>?[]\\;',./`~ and numbers like 1234567890. to make sure they\'re all pre-tokenized correctly.",
         'bla bla bla 10$10'
     ]
     expected = [['This', '<space>', 'is', '<space>', 'a', '<space>', 'sample', '<space>', 'text', '.', '.', '<endoftext>'], 
@@ -466,7 +466,7 @@ def test_encode(naive_bpe_medium_vocab):
     
     # Test case 1: simple sentence, encoded as integers
     text = ['The mitochondria is the powerhouse of the cell!']
-    expected = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 637, 4, 3488, 3680, 2711, 1942, 729, 4, 3015, 4, 5054, 4, 4011, 2735, 4, 3690, 4, 5054, 4, 1448, 6, 2]]
+    expected = [[637, 4, 3488, 3680, 2711, 1942, 729, 4, 3015, 4, 5054, 4, 4011, 2735, 4, 3690, 4, 5054, 4, 1448, 6, 2]]
     assert naive_bpe_medium_vocab.encode(text, return_integers=True) == expected
 
     # Test case 2: paragraph, encoded as integers
@@ -486,8 +486,6 @@ def test_encode(naive_bpe_medium_vocab):
     expected = [['The', '<space>', 'mit', 'oc', 'hon', 'dri', 'a', '<space>', 
                 'is', '<space>', 'the', '<space>', 'power', 'house', '<space>', 
                 'of', '<space>', 'the', '<space>', 'cell', '!', '<endoftext>']]
-    while len(expected[0]) < 100:
-        expected[0].insert(0, '<pad>')
     assert naive_bpe_medium_vocab.encode(text, return_integers=False) == expected
 
     # Test case 4: paragraph, encoded as tokens

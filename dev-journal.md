@@ -1,5 +1,17 @@
 # Dev Journal
 
+### Wednesday - 1/15/25
+
+#### Full Model
+Now, time to put it all together into a full LLM.
+I'll need to add a linear unembedding layer, to convert the output of the transformer blocks back into the word embeddings.
+Then, I'll need to add a sampling function, to generate text from the model.
+
+I want to form one general LLM object, where you can specify how many transformer blocks, how many attention heads per block, d_model, sequence length, etc.
+
+##### Generate Text
+I'll have this function, generate_text, which you can pass a message, and the LLM will generate a response to it. One thing I'm noticing is that the forward pass through the LLM is dependent on the size of the input - including padding tokens. So, I can optimize this by ensuring that there are only necessary padding tokens - in other words, for a batch of just one input, there should be no padding tokens. For a batch of multiple, the input length will be the max length.
+
 ### Tuesday - 1/14/25
 
 #### Transformer Block

@@ -4,9 +4,9 @@ from transformer.block import TransformerBlock
 
 @pytest.fixture
 def transformer_block():
-    return TransformerBlock(d_model=512, seq_len=20)
+    return TransformerBlock(d_model=512)
 
-""" def test_shape(transformer_block):
+def test_shape(transformer_block):
     # Test that the shape of the input is the same as the shape of the output
     batch_size = 3
     seq_len = 20
@@ -15,7 +15,7 @@ def transformer_block():
     
     output = transformer_block.forward(x)
     
-    assert output.shape == x.shape """
+    assert output.shape == x.shape
 
 def test_padding_tokens(transformer_block):
     # Test that padding tokens remain 0 after passing through the block

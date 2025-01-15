@@ -13,7 +13,7 @@ class TransformerBlock:
     A single transformer block.
     '''
 
-    def __init__(self, d_model, seq_len, 
+    def __init__(self, d_model, 
                     # attention
                     num_heads=8, 
                     w_q=None,
@@ -38,8 +38,6 @@ class TransformerBlock:
         ----------
         d_model: int
             The size of word embeddings of the model
-        seq_len: int
-            The length of input sequences
         num_heads: int, optional
             The number of attention heads to use in the attention block.
         w_q: array, optional
@@ -71,7 +69,7 @@ class TransformerBlock:
         '''
 
         # initialize the multi-headed attention block
-        self.attention = MultiHeadAttention(d_model, seq_len, num_heads=num_heads, 
+        self.attention = MultiHeadAttention(d_model, num_heads=num_heads, 
                                             w_q=w_q, w_k=w_k, w_v=w_v, w_o=w_o)
         
         # initialize the feedforward block

@@ -539,21 +539,25 @@ class BPETokenizer:
                             current_word = current_word[i:]
                             break
 
-            # we need to fill out the rest of the sentence with padding
-            while len(sentence_values) < self.context_size:
+            if len(sentence_values) > self.context_size:
+                raise ValueError(f'The following sentence, when tokenized, is longer than the context length: {sentence}')
+        
+            values.append(sentence_values)
+
+
+        # pad the values so that they are all the same length
+        ## get the max sentence length
+        max_len = max([len(sentence) for sentence in values])
+        
+        ## pad everything to this sentence length
+        for sentence_values in values:
+            while len(sentence_values) < max_len:
 
                 if return_integers:
                     sentence_values.insert(0, self.lookup_table_search('<pad>'))
                 else:
-                    sentence_values.insert(0, '<pad>')
+                    sentence_values.insert(0, '<pad>') 
             
-            if len(sentence_values) > self.context_size:
-                raise ValueError(f'The following sentence, when tokenized, is longer than the context length: {sentence}')
-
-            values.append(sentence_values)
-        
-            
-
         return values
 
     def decode(self, token_values: List[List], integers=True) -> List[str]:
@@ -587,7 +591,7 @@ class BPETokenizer:
             decoded_text = ''
 
             # iterate through the token values
-            for token_value in sentence:                    
+            for token_value in sentence:        
 
                 if integers:
                     decoded_token = self.vocab[token_value]
@@ -603,7 +607,6 @@ class BPETokenizer:
                 else:
                     decoded_text += decoded_token
                 
-
             
             decoded_batch.append(decoded_text)
 
@@ -623,7 +626,9 @@ class NaiveBPETokenizer(BPETokenizer):
                     corpus=None,
                     vocab_size=1024,
                     context_size=256,
-                    padding_token='<pad>'
+                    padding_token='<pad>',
+                    end_of_text_token='<endoftext>',
+                    end_of_text_token_int=2
                  ):
         '''
         Initialize the NaiveBPETokenizer.
@@ -642,6 +647,10 @@ class NaiveBPETokenizer(BPETokenizer):
             The size of the context window, aka the maximum length of an input.
         padding_token : str | '<pad>'
             The token to use for padding. Default is '<pad>'.
+        end_of_text_token : str | '<endoftext>'
+            The end of text token. Default is '<endoftext>'.
+        end_of_text_token_int : int | 2
+            The integer value of the end of text token. Default is 2.
         '''
 
         super().__init__(vocab_file=vocab_file, 
@@ -655,6 +664,8 @@ class NaiveBPETokenizer(BPETokenizer):
         special_char_filepath = os.path.join(os.getenv('HOME_DIR'), 'pre_process', 'tokenize', 'assets', 'naive_bpe_special_char.json')
         self.special_characters = self.load_special_char_from_file(special_char_filepath)
 
+        self.end_of_text_token = end_of_text_token
+        self.end_of_text_token_int = end_of_text_token_int
 
     def pre_tokenize(self, input: List[str]) -> List[List[str]]:
         '''
@@ -727,7 +738,7 @@ class NaiveBPETokenizer(BPETokenizer):
                 current_split.append(current_word)
             
             # add end of text token
-            current_split.append('<endoftext>')
+            current_split.append(self.end_of_text_token)
 
             # add the current_split to text_split
             text_split.append(current_split)

@@ -8,15 +8,13 @@ def attention_head():
     d_model = 512
     d_k = 64
     d_v = 64
-    seq_len = 10
-    return AttentionHead(d_model, d_k, d_v, seq_len)
+    return AttentionHead(d_model, d_k, d_v)
 
 @pytest.fixture
 def multi_head_attention():
     d_model = 512
-    seq_len = 10
     num_heads = 8
-    return MultiHeadAttention(d_model, seq_len, num_heads=num_heads)
+    return MultiHeadAttention(d_model, num_heads=num_heads)
 
 def test_head_initialization(attention_head):
     # Test if the AttentionHead is initialized correctly

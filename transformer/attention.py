@@ -7,7 +7,7 @@ class AttentionHead:
     A single attention head.
     '''
 
-    def __init__(self, d_model, d_k, d_v, seq_len,
+    def __init__(self, d_model, d_k, d_v,
                     w_q=None, w_k=None, w_v=None):
         '''
         Initializes the attention head.
@@ -20,8 +20,6 @@ class AttentionHead:
             The size of query and key vectors
         d_v: int
             The size of value vectors
-        seq_len: int
-            The length of input sequences
         w_q: array, optional
             The query weights, of shape (d_model, d_k)
         w_k: array, optional
@@ -40,15 +38,6 @@ class AttentionHead:
         self.w_k = np.random.randn(d_model, d_k) if not w_k else w_k
         # value weights, of shape (d_model, d_k)
         self.w_v = np.random.randn(d_model, d_v) if not w_v else w_v
-
-        """ if position_mask:
-            self.position_mask = position_mask
-        else:
-            # generate the mask - that masks out later tokens
-            ## returns True whenever a token is after the current token
-            mesh = np.meshgrid(np.arange(seq_len), np.arange(seq_len))
-            self.position_mask = (mesh[1] < mesh[0]) """
-        
         
 
     def forward(self, x, attention_mask=None):
@@ -118,7 +107,7 @@ class MultiHeadAttention:
     An attention layer with multiple attention heads.
     '''
 
-    def __init__(self, d_model, seq_len, 
+    def __init__(self, d_model, 
                  num_heads=8,
                  w_q=None, 
                  w_k=None, 
@@ -131,8 +120,6 @@ class MultiHeadAttention:
         ----------
         d_model: int
             The size of word embeddings of the model
-        seq_len: int
-            The length of input sequences
         num_heads: int, optional
             The number of attention heads to use.
         w_q: array, optional
@@ -150,9 +137,9 @@ class MultiHeadAttention:
 
         # instantiate the attention heads
         if w_q and w_k and w_v:
-            self.heads = [AttentionHead(d_model, self.d_k, self.d_v, seq_len, w_q=w_q[i], w_k=w_k[i], w_v=w_v[i]) for i in range(num_heads)]
+            self.heads = [AttentionHead(d_model, self.d_k, self.d_v, w_q=w_q[i], w_k=w_k[i], w_v=w_v[i]) for i in range(num_heads)]
         else:
-            self.heads = [AttentionHead(d_model, self.d_k, self.d_v, seq_len) for _ in range(num_heads)]
+            self.heads = [AttentionHead(d_model, self.d_k, self.d_v) for _ in range(num_heads)]
 
         self.w_o = np.random.randn(d_model, d_model) if not w_o else w_o
 

@@ -64,11 +64,11 @@ In an effort to gain a deep understanding of LLM's (and their underlying archite
   - [x] Residual Connection
   - [x] LayerNorm
 
-- [ ] Full Model
+- [x] Full Model
   - [x] Pre-processing
   - [x] Transformer Blocks
-  - [ ] Unembedding
-  - [ ] Sampling
+  - [x] Linear Unembedding Layer
+  - [x] Sampling
 
 - [ ] Training
 

@@ -132,6 +132,7 @@ class GensimWord2Vec:
         ----------
         text : List[List[str/int]]
             A list of tokens to embed.
+            Note: the sentences should be padded to the same length.
 
         Returns
         -------
@@ -156,17 +157,41 @@ class GensimWord2Vec:
                 
                 else:
                     sentence_embeddings.append(self.model[token])
-            
-            # if the sentence is shorter than the context size, pad it
-            while len(sentence_embeddings) < self.context_size:
-                sentence_embeddings.insert(0, self.padding_embedding)
-            
-            batch_embeddings.append(sentence_embeddings)
 
-        
+            batch_embeddings.append(sentence_embeddings)
+            
         return np.array(batch_embeddings)
                 
+    def unembed_batch(self, batch: np.ndarray) -> List[List[str]]:
+        '''
+        Unembed a batch of word vectors to tokens.
 
+        Parameters
+        ----------
+        batch : np.ndarray
+            An array of arrays of word vectors.
+
+        Returns
+        -------
+        List[List[str]]
+            A list of lists of tokens.
+        '''
+
+        unembedded_batch = []
+
+        # iterate through each sentence
+        for sentence in batch:
+
+            sentence_tokens = []
+
+            for vector in sentence:
+                # find the closest word vector
+                closest_word = self.model.similar_by_vector(vector, topn=1)[0][0]
+                sentence_tokens.append(closest_word)
+            
+            unembedded_batch.append(sentence_tokens)
+        
+        return unembedded_batch
             
 
     

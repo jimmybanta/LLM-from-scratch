@@ -36,7 +36,7 @@ class PreProcessor:
                         'min_count': 1,
                         'workers': 3
                     },
-                    padding_token='<pad>'
+                    padding_token='<pad>',
                  ):
         '''
         Initialize the preprocessor.
@@ -63,6 +63,8 @@ class PreProcessor:
         padding_token : str | '<pad>'
             The token to use for padding.
         '''
+
+        self.vocab_size = vocab_size
 
         # if we're training, check that we have what we need
         if train:
