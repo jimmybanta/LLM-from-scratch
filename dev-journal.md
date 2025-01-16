@@ -19,6 +19,20 @@ I need a dataloader, that can set up my data for training - so I give it the emb
 One thing I'm coming across - I'll need to make sure my vocab is uniform between the tokenizer and the embedder - I have some tokens that through BPE go into the vocab, but don't make it into the word embeddings. This is because they're subparts of words, and they only show up in that one word.
 Ex. 'Abig' is in my tokenizer vocab, but so is 'Abigail' - and in the test corpus I'm using, 'Abig' only is ever part of 'Abigail' - so Abigail gets picked up by the word embedder, but 'Abig' doesn't. So, I'll need to remove tokens like that, to have uniform vocab. 
 
+
+#### Loss function
+I'll start off with cross entropy loss. 
+One thing - I'll need to be sure to not include padding tokens into the loss calculation.
+The way I'll do this is by calculating the inner loss values (before summing them), and then 
+use a mask to set all the values corresponding to padding tokens to 0.
+I need to be a little careful - the targets are the one-hot vectors, formed from the integer values of the tokens. And we dropped the first token - so the targets have one fewer token than the embeddings.
+So, I'll drop the last token from the output of the LLM - because the last token isn't predicting anything.
+That way, the shapes will match. 
+It's input minus the last token, and targets minus the first token. 
+So the padding mask will come from the input, as I want to ignore all predictions from the padding tokens - even the final padding token, which will be compared to the first 'real' token - I want to ignore this as well, when it comes to the loss. 
+
+
+
 ### Wednesday - 1/15/25
 
 #### Full Model
