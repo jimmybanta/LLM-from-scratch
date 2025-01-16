@@ -94,6 +94,27 @@ class LLM:
             Output array - of shape (batch_size, seq_len, vocab_size)
         '''
 
+        seq_len = x.shape[1]
+
+        # form the masks
+        if not attention_mask:
+            # create attention mask - masks out future tokens, and padding tokens
+            mesh = np.meshgrid(np.arange(seq_len), np.arange(seq_len))
+            position_mask = (mesh[1] < mesh[0])
+
+            padding_tokens_mask = np.all(x == 0, axis=2)
+            padding_attention_mask = np.repeat(padding_tokens_mask[:, None, :], padding_tokens_mask.shape[1], axis=1)
+
+            attention_mask = np.logical_or(position_mask, padding_attention_mask)
+
+        if not padding_mask:
+
+            padding_tokens_mask = np.all(x == 0, axis=2)
+
+            # create padding mask - masks out padding tokens, to set them back to 0 after going through the block
+            padding_mask = np.repeat(padding_tokens_mask[:, :, None], x.shape[2], axis=2)
+
+
         for block in self.blocks:
             x = block.forward(x, attention_mask=attention_mask, padding_mask=padding_mask)
         

@@ -467,7 +467,7 @@ def test_encode(naive_bpe_medium_vocab):
     # Test case 1: simple sentence, encoded as integers
     text = ['The mitochondria is the powerhouse of the cell!']
     expected = [[637, 4, 3488, 3680, 2711, 1942, 729, 4, 3015, 4, 5054, 4, 4011, 2735, 4, 3690, 4, 5054, 4, 1448, 6, 2]]
-    assert naive_bpe_medium_vocab.encode(text, return_integers=True) == expected
+    assert naive_bpe_medium_vocab.encode(text, return_value='integers') == expected
 
     # Test case 2: paragraph, encoded as integers
     text = []
@@ -478,7 +478,7 @@ def test_encode(naive_bpe_medium_vocab):
     with open(FILEPATHS['encode_integer_values'], 'r') as file:
         expected = json.load(file)
 
-    assert naive_bpe_medium_vocab.encode(text, return_integers=True) == expected
+    assert naive_bpe_medium_vocab.encode(text, return_value='integers') == expected
 
 
     # Test case 3: simple sentence, encoded as tokens
@@ -486,7 +486,7 @@ def test_encode(naive_bpe_medium_vocab):
     expected = [['The', '<space>', 'mit', 'oc', 'hon', 'dri', 'a', '<space>', 
                 'is', '<space>', 'the', '<space>', 'power', 'house', '<space>', 
                 'of', '<space>', 'the', '<space>', 'cell', '!', '<endoftext>']]
-    assert naive_bpe_medium_vocab.encode(text, return_integers=False) == expected
+    assert naive_bpe_medium_vocab.encode(text, return_value='words') == expected
 
     # Test case 4: paragraph, encoded as tokens
     text = []
@@ -497,7 +497,17 @@ def test_encode(naive_bpe_medium_vocab):
     with open(FILEPATHS['encode_token_values'], 'r') as file:
         expected = json.load(file)
     
-    assert naive_bpe_medium_vocab.encode(text, return_integers=False) == expected
+    assert naive_bpe_medium_vocab.encode(text, return_value='words') == expected
+
+    # Test case 3: simple sentence, encoded as both
+    text = ['The mitochondria is the powerhouse of the cell!']
+    expected = [
+        [('The', 637), ('<space>', 4), ('mit', 3488), ('oc', 3680), ('hon', 2711), ('dri', 1942), ('a', 729), 
+         ('<space>', 4), ('is', 3015), ('<space>', 4), ('the', 5054), ('<space>', 4), ('power', 4011), 
+         ('house', 2735), ('<space>', 4), ('of', 3690), ('<space>', 4), ('the', 5054), ('<space>', 4), 
+         ('cell', 1448), ('!', 6), ('<endoftext>', 2)]
+    ]
+    assert naive_bpe_medium_vocab.encode(text, return_value='both') == expected
 
 def test_decode(naive_bpe_medium_vocab):
 

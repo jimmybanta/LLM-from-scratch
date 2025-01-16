@@ -161,7 +161,8 @@ class GensimWord2Vec:
             batch_embeddings.append(sentence_embeddings)
             
         return np.array(batch_embeddings)
-                
+    
+"""                 
     def unembed_batch(self, batch: np.ndarray) -> List[List[str]]:
         '''
         Unembed a batch of word vectors to tokens.
@@ -192,6 +193,6 @@ class GensimWord2Vec:
             unembedded_batch.append(sentence_tokens)
         
         return unembedded_batch
-            
+           """  
 
     

@@ -462,7 +462,7 @@ class BPETokenizer:
 
         return current_dict['complete_token']
 
-    def encode(self, text: List[str], return_integers=False) -> List[List]:
+    def encode(self, text: List[str], return_value='both') -> List[List]:
         '''
         Given a batch (list) of strings, encodes them using the vocabulary.
         Either encodes them as their integer values, or as the tokens themselves.
@@ -471,8 +471,8 @@ class BPETokenizer:
         ----------
         text : List[str]
             The text to encode.
-        return_integers : bool | False
-            Whether to return the tokens as integers. Default is False.
+        return_value : str | 'both'
+            Whether to return the tokens as words/subwords ('words'), integers, or both. Default is both.
 
         Returns
         -------
@@ -495,10 +495,12 @@ class BPETokenizer:
             for word in sentence:
                 
                 if word in self.special_characters:
-                    if return_integers:
+                    if return_value == 'integers':
                         sentence_values.append(self.lookup_table_search(word))
-                    else:
+                    elif return_value == 'words':
                         sentence_values.append(word)
+                    elif return_value == 'both':
+                        sentence_values.append((word, self.lookup_table_search(word)))
                     continue
 
                 # start with the full word
@@ -520,10 +522,12 @@ class BPETokenizer:
                             # if we've reached the end of the word, then no token exists
                             ## add the unknown token
                             if i == 1:
-                                if return_integers:
+                                if return_value == 'integers':
                                     sentence_values.append(0)
-                                else:
+                                elif return_value == 'words':
                                     sentence_values.append('<unknown>')
+                                elif return_value == 'both':
+                                    sentence_values.append(('<unknown>', 0))
                                 current_word = current_word[i:]
 
                             i -= 1
@@ -532,10 +536,12 @@ class BPETokenizer:
                         # if it is in the vocab, then add it to token_values
                         # and update current_word to be the remaining characters after the token
                         else:
-                            if return_integers:
+                            if return_value == 'integers':
                                 sentence_values.append(token_value)
-                            else:
+                            elif return_value == 'words':
                                 sentence_values.append(current_word[:i])
+                            elif return_value == 'both':
+                                sentence_values.append((current_word[:i], token_value))
                             current_word = current_word[i:]
                             break
 
@@ -553,10 +559,12 @@ class BPETokenizer:
         for sentence_values in values:
             while len(sentence_values) < max_len:
 
-                if return_integers:
+                if return_value == 'integers':
                     sentence_values.insert(0, self.lookup_table_search('<pad>'))
-                else:
+                elif return_value == 'words':
                     sentence_values.insert(0, '<pad>') 
+                elif return_value == 'both':
+                    sentence_values.insert(0, ('<pad>', self.lookup_table_search('<pad>')))
             
         return values
 

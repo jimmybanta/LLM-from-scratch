@@ -1,5 +1,24 @@
 # Dev Journal
 
+### Thursday - 1/16/25
+Training! 
+
+Time to work on training the model.
+General overview of training:
+- I'll need a dataset, that I'll split up into sentences, of a maximum length.
+- I'll need to pre-process this dataset, so that it's ready to be passed into the model.
+- Then, I'll put it into batches, and pass them through the forward pass of the model.
+- Then, I'll calculate the loss.
+    - One question - I'll want every sentence to be multiple training examples - ex. for the sentence 'The frog is green', I'll want to predict 'frog' given 'The', 'is' given 'The frog', 'green' given 'The frog is', etc. Naively, I could do many forward passes - but this seems inefficient. Plus, in one forward pass, I'm effectively doing that anyway, right? 
+        - Yep - tested this out by running 'the', then 'the frog', then 'the frog is' through - and the output tokens at the beginning stay the same. This makes sense - tokens only attend to ones before them, so tokens after a token have no effect on the output of that token.
+    - So, I can just run each sentence through, and calculate the loss for each token, for predicting the next token. 
+
+#### Dataloader
+I need a dataloader, that can set up my data for training - so I give it the embedded sentences, and the corresponding integer values of the tokens, and it will return batches of pairs of sentences, with the corresponding tokens to predict (I'll do this by just shifting the token lists back one - so that, in each position i, you have the embedding for token i, and the integer value for token i+1, i.e. the next token, that it's trying to predict.)
+
+One thing I'm coming across - I'll need to make sure my vocab is uniform between the tokenizer and the embedder - I have some tokens that through BPE go into the vocab, but don't make it into the word embeddings. This is because they're subparts of words, and they only show up in that one word.
+Ex. 'Abig' is in my tokenizer vocab, but so is 'Abigail' - and in the test corpus I'm using, 'Abig' only is ever part of 'Abigail' - so Abigail gets picked up by the word embedder, but 'Abig' doesn't. So, I'll need to remove tokens like that, to have uniform vocab. 
+
 ### Wednesday - 1/15/25
 
 #### Full Model

@@ -71,6 +71,9 @@ In an effort to gain a deep understanding of LLM's (and their underlying archite
   - [x] Sampling
 
 - [ ] Training
+  - [x] Dataloader (given a batch of sentences, form sentence pairs) 
+  - [ ] Loss function
+  - 
 
 
 ## Directories & Files

@@ -2,6 +2,7 @@
 import os
 import logging.config
 import logging
+import numpy as np
 from time import perf_counter as pc
 
 
@@ -135,7 +136,7 @@ class PreProcessor:
             logger.info('Word embeddings saved.')
 
             
-    def pre_process(self, batch):
+    def pre_process(self, batch, training=False):
         '''
         Pre-process a batch of text.
 
@@ -143,18 +144,28 @@ class PreProcessor:
         ----------
         batch : List[str]
             A list of sentences to pre-process.
+        training : bool | False
+            Whether we're training or not.
+            If true, then it will return the tokenized integers as well as the encoded batch.
         '''
 
         # tokenize the batch
-        tokenized_batch = self.tokenizer.encode(batch, return_integers=False)
+        tokenized_batch = self.tokenizer.encode(batch, return_value='both')
+
+        tokenized_words = [[x[0] for x in sentence] for sentence in tokenized_batch]
+        tokenized_integers = np.array([[x[1] for x in sentence] for sentence in tokenized_batch])
 
         # embed the batch
-        embedded_batch = self.word_embedder.embed_batch(tokenized_batch)
+        embedded_batch = self.word_embedder.embed_batch(tokenized_words)
 
         # encode the positional information
         encoded_batch = self.pe.encode(embedded_batch)
 
-        return encoded_batch
+        if training:
+            return encoded_batch, tokenized_integers
+        else:
+            return encoded_batch
+    
         
 
 
