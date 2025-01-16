@@ -9,7 +9,9 @@ class DataLoader:
 
     def __init__(self, embeddings, integers, 
                  vocab_size=10000,
-                 batch_size=32, shuffle=True):
+                 batch_size=32, 
+                 shuffle=True,
+                 label_smoothing=0.1):
         '''
         Initialize the DataLoader.
 
@@ -25,6 +27,8 @@ class DataLoader:
             The batch size.
         shuffle: bool, optional
             Whether to shuffle the data.
+        label_smoothing: float, optional
+            The label smoothing parameter. Set to 0 for no label smoothing.
         '''
 
         self.batch_size = batch_size
@@ -43,9 +47,17 @@ class DataLoader:
         ## the model will predict the next token
         ## given the current token
         one_hot = np.zeros((integers.shape[0], integers.shape[1], vocab_size))
+
+        # add label smoothing
+        ## fill the one-hot vectors with the label smoothing value
         one_hot[np.arange(integers.shape[0])[:, None], np.arange(integers.shape[1]), integers] = 1
         
+        one_hot *= (1 - label_smoothing)
+        one_hot += label_smoothing / vocab_size
+
         self.targets = one_hot
+
+        print(self.targets)
 
         self.shuffle = shuffle
 

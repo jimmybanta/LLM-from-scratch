@@ -31,6 +31,9 @@ That way, the shapes will match.
 It's input minus the last token, and targets minus the first token. 
 So the padding mask will come from the input, as I want to ignore all predictions from the padding tokens - even the final padding token, which will be compared to the first 'real' token - I want to ignore this as well, when it comes to the loss. 
 
+#### Label smoothing
+In the original Transformer paper, they use label smoothing - so I'll add it.
+I'll implement it within the dataloader.
 
 
 ### Wednesday - 1/15/25

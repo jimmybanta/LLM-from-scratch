@@ -74,7 +74,7 @@ In an effort to gain a deep understanding of LLM's (and their underlying archite
   - [x] Dataloader (given a batch of sentences, form sentence pairs) 
   - [x] Loss function(s)
     - [x] Cross-Entropy
-  - 
+  - [x] Label smoothing
 
 
 ## Directories & Files
