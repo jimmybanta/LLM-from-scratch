@@ -75,6 +75,8 @@ In an effort to gain a deep understanding of LLM's (and their underlying archite
   - [x] Loss function(s)
     - [x] Cross-Entropy
   - [x] Label smoothing
+  - [x] Dropout
+  - [ ]
 
 
 ## Directories & Files

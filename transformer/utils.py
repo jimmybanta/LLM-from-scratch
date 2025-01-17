@@ -31,6 +31,30 @@ def relu(x):
 
     return x
 
+def dropout(input, p=0.1, scale=True):
+    '''
+    Applies dropout to an input.
 
+    Parameters
+    -----------
+    input: np.ndarray
+        The input array.
+    p: float
+        The probability of dropping out a neuron.
+    scale: bool
+        Whether to scale the output by 1/(1-p).
+    '''
 
+    if p < 0 or p >= 1:
+        raise ValueError('p must be in the range [0, 1).')
+    
+    if p == 0:
+        return input
+    
+    mask = np.random.binomial(1, 1 - p, input.shape)
+
+    if scale:
+        return mask * input / (1 - p)
+    else:
+        return mask * input
 

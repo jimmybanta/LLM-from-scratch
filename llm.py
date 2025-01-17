@@ -4,7 +4,7 @@ import numpy as np
 
 from transformer.block import TransformerBlock
 from transformer.mlp import Linear
-from transformer.utils import softmax
+from transformer.utils import softmax, dropout
 
 
 class LLM:
@@ -13,6 +13,8 @@ class LLM:
     '''
 
     def __init__(self, d_model, pre_processor,
+                    pe_dropout=0.1,
+                    sublayer_dropout=0.1,
                     num_blocks=6,
                     parameter_dict=None,
                     # attention
@@ -33,6 +35,10 @@ class LLM:
             The size of the word embeddings.
         pre_processor: PreProcessor
             The preprocessor object.
+        pe_dropout: float, optional
+            The dropout rate to apply to the embeddings + positional encodings.
+        sublayer_dropout: float, optional
+            The dropout rate to apply to the outputs of the sublayers.
         num_blocks: int, optional
             The number of transformer blocks to use.
         parameter_dict: dict, optional
@@ -58,6 +64,7 @@ class LLM:
         else:
             # instantiate the transformer blocks
             self.blocks = [TransformerBlock(d_model, 
+                                            dropout=sublayer_dropout,
                                             num_heads=num_heads,
                                             hidden_dim=hidden_dim,
                                             bias=bias,
@@ -69,6 +76,8 @@ class LLM:
                                     out_features=pre_processor.vocab_size,
                                     bias=True)
 
+        self.pe_dropout = pe_dropout
+        self.sublayer_dropout = sublayer_dropout
 
 
     def forward(self, x, 
@@ -114,12 +123,18 @@ class LLM:
             # create padding mask - masks out padding tokens, to set them back to 0 after going through the block
             padding_mask = np.repeat(padding_tokens_mask[:, :, None], x.shape[2], axis=2)
 
+        # first - apply dropout to the inputs (sums of embeddings and positional encodings)
+        x = dropout(x, self.pe_dropout)
 
+        # pass through the blocks
         for block in self.blocks:
-            x = block.forward(x, attention_mask=attention_mask, padding_mask=padding_mask)
+            x = block.forward(x, attention_mask=attention_mask, 
+                              padding_mask=padding_mask)
         
+        # pass through the unembedding layer
         x = self.unembed.forward(x)
 
+        # apply softmax
         return softmax(x, temperature=temperature, axis=-1)
     
     def sample(self, probs, method='weighted'):

@@ -5,6 +5,7 @@ import numpy as np
 from transformer.attention import MultiHeadAttention
 from transformer.mlp import TwoLayerMLP
 from transformer.layer_norm import LayerNorm
+from transformer.utils import dropout
 
 
 
@@ -14,6 +15,7 @@ class TransformerBlock:
     '''
 
     def __init__(self, d_model, 
+                    dropout=0.1,
                     # attention
                     num_heads=8, 
                     w_q=None,
@@ -38,6 +40,8 @@ class TransformerBlock:
         ----------
         d_model: int
             The size of word embeddings of the model
+        dropout: float, optional
+            The dropout rate to apply to the outputs of the sublayers.
         num_heads: int, optional
             The number of attention heads to use in the attention block.
         w_q: array, optional
@@ -80,6 +84,9 @@ class TransformerBlock:
         self.layer_norm = LayerNorm(d_model, eps=eps, 
                                     scale_shift=scale_shift, 
                                     gamma=gamma, beta=beta)
+        
+        # store the dropout rate
+        self.dropout = dropout
 
 
     def forward(self, x, attention_mask=None, padding_mask=None):
@@ -104,6 +111,9 @@ class TransformerBlock:
         # pass through the attention block
         att_output = self.attention.forward(x, attention_mask=attention_mask)
 
+        # apply dropout
+        att_output = dropout(att_output, self.dropout)
+
         # add the residual connection
         x += att_output
 
@@ -112,6 +122,9 @@ class TransformerBlock:
 
         # pass through the feedforward block
         ff_output = self.feedforward.forward(x)
+
+        # apply dropout
+        ff_output = dropout(ff_output, self.dropout)
         
         # add the residual connection
         x += ff_output
@@ -122,5 +135,5 @@ class TransformerBlock:
         # use the padding mask to zero out the padding tokens
         if padding_mask is not None:
             x[padding_mask] = 0.0
-
+        
         return x

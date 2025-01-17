@@ -1,5 +1,20 @@
 # Dev Journal
 
+### Friday - 1/17/25
+
+#### Dropout
+In the original paper, they apply:
+
+"dropout to the output of each sub-layer, before it is added to the sub-layer input and normalized. In addition, we apply dropout to the sums of the embeddings and the positional encodings in both the encoder and decoder stacks. For the base model, we use a rate of Pdrop = 0.1."
+
+So I'll do this - so I need a function that, with a given probability, zeros out the values of a tensor.
+Question - does this mean zeroing out the entire token's embedding, or just individual values in the embedding?
+- Solution: I'll run it in pytorch, and see what it does.
+- Ok - it zeros out only individual values in the embedding, so I'll do that
+- Another question - pytorch dropout scales the non-dropped-out values by 1/(1 - p) -- why?
+- After reading some things, it does this so that the expected value of the output remains the same, so that you aren't getting exaggerated outputs when it comes time for inference
+Another question - I know dropout in the context of applying it to activations - in effect, zeroing out neurons, so that they don't play a role. But now they're saying I should apply it to the output of each sub-layer - so, the output of the attention layer, the output of the feedforward layer, etc.
+
 ### Thursday - 1/16/25
 Training! 
 
